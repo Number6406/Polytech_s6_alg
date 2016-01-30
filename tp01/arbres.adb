@@ -14,12 +14,12 @@ package body arbres is
 	-- procedure de désallocation d'une case mémoire contenant un noeud
 	procedure free is new Ada.Unchecked_Deallocation (noeud, abr);
 	
-	-- ajouter une clé à un abr déjà existant
+	-- ajouter une clé à un abr déjà existant (en conservant l'ordre)
 	procedure ajouter_cle ( A : in out abr; cle : in integer ) is
 		N : abr;
 	begin
 		if A = Null then 
-			-- On crée la case mémoire pour la clé donnée
+			-- On crée la case mémoire pour la clé donnée, une feuille
 			N := new noeud;
 			N.all.cle := cle;
 			N.all.gauche := Null;
@@ -59,29 +59,29 @@ package body arbres is
 		end if;
 	end liberer_abr;
 	
-	procedure aff_racine (A : abr) is
+	
+	-- affichage de l'arbre
+	procedure aff (A : in abr ; s : in String ) is
 	begin
-		if A /= Null then
-			put(A.all.cle,2);
+		if (A /= NULL) then 
+			if (A.all.droit /= NULL) then
+				aff(A.all.droit, s & "    ");
+			end if;
+			put(s); put(A.all.cle,2); if ( A.all.droit /= NULL or else A.all.gauche /= NULL ) then put("<"); end if;
+			new_line;
+			if (A.all.gauche /= NULL) then
+				aff(A.all.gauche, s & "    ");
+			end if;
 		end if;
-	end aff_racine;
+	end aff;	
 	
 	-- afficher un abr (aff infixé)
-	procedure aff_abr ( A : in abr) is
-		procedure aux ( A : in abr) is
-		begin
-			if A /= Null
-			then
-				aux(A.all.gauche);
-				put(A.all.cle,3);
-				aux(A.all.droit);
-			end if;
-		end aux;
-		
+	procedure aff_abr ( A : in abr) is		
 	begin
-		aux(A);new_line;
+		aff(A,"");new_line;
 	end aff_abr;
 	
+	-- Renvoie le maximum de deux entiers
 	function max (x,y : integer) return integer is
 	begin
 		if x < y 
@@ -95,11 +95,11 @@ package body arbres is
 	begin
 		if A = Null
 		then return 0;
-		else return 1+max(hauteur(A.all.gauche),hauteur(A.all.droit));
+		else return 1 + max(hauteur(A.all.gauche),hauteur(A.all.droit));
 		end if;
 	end hauteur;
 	
-	-- renvoie le nombre de noeuds internes à l'abr
+	-- renvoie le nombre de noeuds internes à l'ABR
 	function nbNoeuds ( A : abr) return integer is
 	begin
 		if A = Null 
@@ -111,7 +111,7 @@ package body arbres is
 		end if;
 	end nbNoeuds;
 	
-	-- renvoie le nombre de feuilles de l'abr
+	-- renvoie le nombre de feuilles de l'ABR
 	function nbFeuilles ( A : abr) return integer is
 	begin
 		if A = Null 
@@ -132,7 +132,18 @@ package body arbres is
 		end if;
 	end somme;
 	
-	-- tourne l'abr (s'il est tournable) vers la droite
+	-- affiche les informations de l'ABR
+	procedure info_abr (A : in abr) is
+	begin
+		put_line("Informations sur l'ABR.");
+		put("Hauteur : ");put(hauteur(A),2);
+		put(" Noeuds : ");put(nbNoeuds(A),2);
+		put(" Feuilles : ");put(nbFeuilles(A),2);
+		put(" Somme : ");put(somme(A),4);
+		new_line;
+	end info_abr;
+	
+	-- tourne l'ABR vers la droite
 	procedure rotationD (A : in out abr) is
 		B,G : abr;
 	begin
@@ -147,7 +158,7 @@ package body arbres is
 		end if;
 	end rotationD;
 	
-	-- tourne l'abr (s'il est tournable) vers la gauche
+	-- tourne l'ABR vers la gauche
 	procedure rotationG (A : in out abr) is
 		B,D : abr;
 	begin
@@ -164,32 +175,22 @@ package body arbres is
 	
 	-- equilibre (au mieux) un abr
 	procedure equilibrer ( A : in out abr) is
-		HG, HD : integer;
+		HG, HD, HA : integer;
 	begin
 		if A /= Null then
-			equilibrer (A.all.gauche);
+			HA := hauteur(A);
+			
 			equilibrer (A.all.droit);
+			equilibrer (A.all.gauche);
+			
 			HD := hauteur(A.all.droit);
 			HG := hauteur(A.all.gauche);
 			if HD + 1 < HG then rotationD(A); end if;
 			if HG + 1 < HD then rotationG(A); end if;
+			
+			if hauteur(A) < HA then equilibrer(A); end if;
 		end if;
 	end equilibrer;
-	
-	-- affichage de l'arbre
-	procedure aff (A : in abr ; s : in String ) is
-		hg, hd : integer;
-	begin
-		if (A /= NULL) then 
-			if (A.all.gauche /= NULL) then
-				aff(A.all.gauche, s & "    ");
-			end if;
-			put(s); aff_racine(A); if ( A.all.droit /= NULL or else A.all.gauche /= NULL ) then put("<"); end if;
-			new_line;
-			if (A.all.droit /= NULL) then
-				aff(A.all.droit, s & "    ");
-			end if;
-		end if;
-	end aff;
+
 	
 end arbres;

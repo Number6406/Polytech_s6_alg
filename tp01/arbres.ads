@@ -13,7 +13,7 @@ package arbres is
 		droit : abr;
 	end record;
 	
-	type inttab is array (1..500) of integer;
+	type inttab is array (1..100) of integer;
 	
 	type tab is record
 		T : inttab;
@@ -47,6 +47,9 @@ package arbres is
 	-- Calcule la somme des clés de l'ABR
 	function somme (A : abr) return integer;
 	
+	-- affiche les informations de l'ABR
+	procedure info_abr (A : in abr);
+	
 	-- tourne l'abr (s'il est tournable) vers la droite
 	procedure rotationD (A : in out abr);
 	
@@ -55,8 +58,5 @@ package arbres is
 	
 	-- equilibre (au mieux) un abr
 	procedure equilibrer ( A : in out abr);
-	
-	-- affichage de l'arbre
-	procedure aff (A : in abr ; s : in String );
 	
 end arbres;
