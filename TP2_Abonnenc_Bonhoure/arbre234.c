@@ -28,16 +28,55 @@ Arbre test_bidon(void){
 	A->cle[0] = 5;
 	A->cle[1] = 12;
 	A->enfant[0] = malloc(sizeof(Noeud));
-	A->enfant[1] = NULL;
+	A->enfant[1] = malloc(sizeof(Noeud));
 	A->enfant[2] = malloc(sizeof(Noeud));
 	A->enfant[0]->nb = 1;
 	A->enfant[0]->cle[0] = 3;
 	A->enfant[0]->enfant[0] = NULL;
 	A->enfant[0]->enfant[1] = NULL;
+	A->enfant[1]->nb = 2;
+	A->enfant[1]->cle[0] = 8;
+	A->enfant[1]->cle[1] = 11;
+	A->enfant[1]->enfant[0] = NULL;
+	A->enfant[1]->enfant[1] = NULL;
+	A->enfant[1]->enfant[2] = NULL;
 	A->enfant[2]->nb = 1;
 	A->enfant[2]->cle[0] = 15;
 	A->enfant[2]->enfant[0] = NULL;
 	A->enfant[2]->enfant[1] = NULL;
+	
+	return A;
+}
+
+Arbre test_eclat(void){
+	Arbre A;
+	A = malloc(sizeof(Noeud));
+	A->nb = 3;
+	A->cle[0] = 5;
+	A->cle[1] = 12;
+	A->cle[2] = 23;
+	A->enfant[0] = malloc(sizeof(Noeud));
+	A->enfant[1] = malloc(sizeof(Noeud));
+	A->enfant[2] = malloc(sizeof(Noeud));
+	A->enfant[3] = malloc(sizeof(Noeud));
+	A->enfant[0]->nb = 1;
+	A->enfant[0]->cle[0] = 3;
+	A->enfant[0]->enfant[0] = NULL;
+	A->enfant[0]->enfant[1] = NULL;
+	A->enfant[1]->nb = 2;
+	A->enfant[1]->cle[0] = 8;
+	A->enfant[1]->cle[1] = 11;
+	A->enfant[1]->enfant[0] = NULL;
+	A->enfant[1]->enfant[1] = NULL;
+	A->enfant[1]->enfant[2] = NULL;
+	A->enfant[2]->nb = 1;
+	A->enfant[2]->cle[0] = 15;
+	A->enfant[2]->enfant[0] = NULL;
+	A->enfant[2]->enfant[1] = NULL;
+	A->enfant[3]->nb = 1;
+	A->enfant[3]->cle[0] = 25;
+	A->enfant[3]->enfant[0] = NULL;
+	A->enfant[3]->enfant[1] = NULL;
 	
 	return A;
 }
@@ -100,7 +139,7 @@ void eclaterNoeud(Arbre A, Arbre P){
 		nd->enfant[0] = A->enfant[2];
 		nd->enfant[1] = A->enfant[3];
 			
-		if(P==NULL){//Eclatement racine
+		if(P == NULL){//Eclatement racine
 			
 			// Crée le noeud racine, en mettant A à gauche
 			racine = malloc(sizeof(Noeud));
@@ -121,6 +160,8 @@ void eclaterNoeud(Arbre A, Arbre P){
 			int i,j;
 			int cle = A->cle[1];
 			A->nb = 1;
+			A->enfant[2] = NULL;
+			A->enfant[3] = NULL;
 			
 			i=0;
 			while(cle<P->cle[i])i++;
@@ -133,10 +174,6 @@ void eclaterNoeud(Arbre A, Arbre P){
 			P->enfant[i]=A;
 			P->enfant[i+1]=nd;
 			
-			
-			
-			
-			
 		}
 		
 	}
@@ -145,10 +182,11 @@ void eclaterNoeud(Arbre A, Arbre P){
 
 int *insereCleNoeud(int cle, int nb, int tab[]) {
 	int i, j;
-	for(i == 0; i < 3; i++) {
-		if(i > nb) tab[i] = cle;
-		return tab;
-		else {
+	for(i = 0; i < 3; i++) {
+		if(i > nb) {
+			tab[i] = cle;
+			return tab;
+		} else {
 			if(cle < tab[i]) {
 				for(j=i; j < 3; j++) {
 					tab[j] = tab[j-1];
@@ -161,7 +199,7 @@ int *insereCleNoeud(int cle, int nb, int tab[]) {
 }
 
 // insérer un élément dans un Arbre
-void insertion (int cle; Arbre A; Arbre parent){
+void insertion (int cle, Arbre A, Arbre P){
 	int i;
 
 	// Si le noeud n'a pas d'élément, on ne peut pas descendre plus loin, donc on insère
@@ -185,16 +223,58 @@ void insertion (int cle; Arbre A; Arbre parent){
 	
 }
 
+Arbre creer_arbre(){
+	int cle;
+	Arbre A = NULL;
+	printf("Création d'un arbre. Pour arreter, entrez un entier négatif.\n");
+	do{
+		printf("Cle à insérer : ");
+		scanf("%d",&cle);
+		//insertion(cle,A,NULL);
+	}while(cle>0);
+	return A;
+}
+
+// Hauteur en recupérant le maximum des hauteurs de chaque sous arbres
+int hauteur_naive(Arbre A){
+	int i;
+	int max, courant;
+	if (A == NULL) return 0;
+	else {
+		max = hauteur_naive(A->enfant[0]);
+		for(i=1;i<=A->nb;i++){
+			courant = hauteur_naive(A->enfant[i]);
+			if(courant > max) max = courant;
+		}
+		return 1+max;
+	}
+}
+
+// Hauteur considérant que toutes les feuilles sont au même niveau
+int hauteur(Arbre A){
+	
+	if (A == NULL) return 0;
+	else {
+		return 1+hauteur(A->enfant[0]);
+	}
+}
+
 int main(void) {
-	Arbre A = test_bidon();
+	Arbre A = test_eclat();
 	parcours(A);
 	printf("\n3 est dans A : %d\n",recherche_b(3,A));
 	printf("8 est dans A : %d\n",recherche_b(8,A));
 	printf("3 est dans A ?\n");
 	parcours(recherche_p(3,A));
-	printf("8 est dans A ?\n");
+	printf("\n8 est dans A ?\n");
 	parcours(recherche_p(8,A));
-	printf("5 est dans A ?\n");
+	printf("\n5 est dans A ?\n");
 	parcours(recherche_p(5,A));
+	
+	printf("\nhauteur A : %d\n A != NULL : %d\n",hauteur(A), A!=NULL);
+	eclaterNoeud(A,NULL);
+	parcours(A);
+	printf("\nhauteur A : %d\n A != NULL : %d\n",hauteur(A), A!=NULL);
+	
 	return 0;
 }
