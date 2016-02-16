@@ -143,31 +143,46 @@ void eclaterNoeud(Arbre A, Arbre P){
 	
 }
 
+int *insereCleNoeud(int cle, int nb, int tab[]) {
+	int i, j;
+	for(i == 0; i < 3; i++) {
+		if(i > nb) tab[i] = cle;
+		return tab;
+		else {
+			if(cle < tab[i]) {
+				for(j=i; j < 3; j++) {
+					tab[j] = tab[j-1];
+				}
+				tab[i] = cle;
+				return tab;
+			}
+		}
+	}
+}
 
 // insérer un élément dans un Arbre
 void insertion (int cle; Arbre A; Arbre parent){
-	int i, j;
-	
-	
-	if(est_feuille(A)){
-		if(A->nb=1){
-			nb=2;
-			if(A->cle[0]<cle){
-				A->cle[1]=cle;
-			}
-			else{
-				A->cle[1] = A->cle[2];
-				A->cle[0]=cle;
-			}
-		}
-		else if(A->nb=2){
+	int i;
+
+	// Si le noeud n'a pas d'élément, on ne peut pas descendre plus loin, donc on insère
+	if(A == NULL) {
+		A = malloc(sizeof(Noeud));
+		A->nb = 1;
+		A->cle[0] = cle;
+	} else {
 			
+		// Eclatement si le noeud comporte 3 éléments
+		if(A->nb == 3) eclaterNoeud(A,P);
+
+		if(A->nb < 3) {
+			insereCleNoeud(cle,A->nb,A->cle);
+		} else {		
+			for (i = 0; i < A->nb; i++) {
+				if(cle < A->cle[i]) insertion(cle, A->enfant[i], A);
+			}
 		}
-		else{
-			
-		}
-	}
-	else
+	}	
+	
 }
 
 int main(void) {
