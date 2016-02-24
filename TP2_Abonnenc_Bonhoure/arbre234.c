@@ -83,15 +83,31 @@ Arbre test_eclat(void){
 
 // Parcoure l'abre en ordre infixé (pour un affichage dans l'ordre croissant
 void parcours(Arbre A){
-	int i;
-	if (A != NULL){
-		for(i=0; i < A->nb;i++){
-			parcours(A->enfant[i]);
-			printf("%d ",A->cle[i]);
+	
+	void aux(Arbre A){
+		int i;
+		if (A != NULL){
+			for(i=0; i < A->nb;i++){
+				aux(A->enfant[i]);
+				printf("%d ",A->cle[i]);
+			}
+			aux(A->enfant[i]);
 		}
-		parcours(A->enfant[i]);
 	}
+	
+	aux(A);
+	printf("\n");
 }
+
+// Affiche le contenu d'un noeud
+void aff_noeud(Arbre A){
+	int i;
+	for (i=0; i<A->nb;i++){
+		printf("%d ",A->cle[i]);
+	}
+	printf("\n");
+}
+
 
 // Renvoie vrai si la clé se trouve dans l'arbre
 int recherche_b (int x, Arbre A) {
@@ -129,32 +145,33 @@ Arbre recherche_p (int x, Arbre A) {
 void eclaterNoeud(Arbre A, Arbre P){
 	if(A->nb == 3){
 		
-		Arbre racine;
-		Arbre nd;
+		Arbre nga;
+		Arbre ndr;
 		
 		// Recupére la 3eme valeur et ses fils
-		nd = malloc(sizeof(Noeud));
-		nd->nb = 1;
-		nd->cle[0] = A->cle[2];
-		nd->enfant[0] = A->enfant[2];
-		nd->enfant[1] = A->enfant[3];
+		ndr = malloc(sizeof(Noeud));
+		ndr->nb = 1;
+		ndr->cle[0] = A->cle[2];
+		ndr->enfant[0] = A->enfant[2];
+		ndr->enfant[1] = A->enfant[3];
 			
 		if(P == NULL){//Eclatement racine
 			
-			// Crée le noeud racine, en mettant A à gauche
-			racine = malloc(sizeof(Noeud));
-			racine->nb = 1;
-			racine->cle[0] = A->cle[1];
-			racine->enfant[0] = A;
-			racine->enfant[1] = nd;
+			// Crée le noeud gauche, en mettant A en haut
+			nga = malloc(sizeof(Noeud));
+			nga->nb = 1;
+			nga->cle[0] = A->cle[0];
+			nga->enfant[0] = A->enfant[0];
+			nga->enfant[1] = A->enfant[1];
 			
 			// Modifie le noeud A
-			A->nb=1;
+			A->cle[0] = A->cle[1];
+			A->enfant[0]=nga;
+			A->enfant[1]=ndr;
 			A->enfant[2] = NULL;
 			A->enfant[3] = NULL;
+			A->nb=1;
 			
-			// Renvoie la racine via A
-			A = racine;
 		}
 		else{ // Eclatement avec insertion en P (supposant P de taille <=2)
 			int i,j;
@@ -164,15 +181,15 @@ void eclaterNoeud(Arbre A, Arbre P){
 			A->enfant[3] = NULL;
 			
 			i=0;
-			while(cle<P->cle[i])i++;
-			for(j=P->nb;j>=i;j--){
+			while(i<P->nb && cle<P->cle[i])i++;
+			for(j=P->nb;j>i;j--){
 				P->cle[j]=P->cle[j-1];
 				P->enfant[j+1]=P->enfant[j];
 			}
 			P->nb = P->nb + 1;
 			P->cle[i]=cle;
 			P->enfant[i]=A;
-			P->enfant[i+1]=nd;
+			P->enfant[i+1]=ndr;
 			
 		}
 		
@@ -180,25 +197,33 @@ void eclaterNoeud(Arbre A, Arbre P){
 	
 }
 
-int *insereCleNoeud(int cle, int nb, int tab[]) {
+// Insére une clé dans un noeud FEUILLE !
+void insereCleNoeud(int cle, Arbre A) {
 	int i, j;
-	for(i = 0; i < 3; i++) {
-		if(i > nb) {
-			tab[i] = cle;
-			return tab;
-		} else {
-			if(cle < tab[i]) {
-				for(j=i; j < 3; j++) {
-					tab[j] = tab[j-1];
-				}
-				tab[i] = cle;
-				return tab;
-			}
-		}
+		
+	i=0;
+	while(i<A->nb&&cle>A->cle[i])i++; // Avancer tant que la clé est plus petite
+	//décaler les clefs vers la droite
+	for(j=A->nb;j>i;j--){
+		A->cle[j]=A->cle[j-1];
 	}
+	A->nb = A->nb + 1;
+	A->cle[i]=cle;
+	for(i=0;i<=A->nb;i++) {A->enfant[i]=NULL;}
 }
 
+
+
+int est_feuille(Arbre A){
+	int b,i;
+	b = (A!=NULL);
+	for(i=0;i<=A->nb;i++){
+		b = b && (A->enfant[i]==NULL);
+	}
+	return b;
+}
 // insérer un élément dans un Arbre
+///TODO
 void insertion (int cle, Arbre A, Arbre P){
 	int i;
 
@@ -207,22 +232,33 @@ void insertion (int cle, Arbre A, Arbre P){
 		A = malloc(sizeof(Noeud));
 		A->nb = 1;
 		A->cle[0] = cle;
-	} else {
-			
-		// Eclatement si le noeud comporte 3 éléments
-		if(A->nb == 3) eclaterNoeud(A,P);
-
-		if(A->nb < 3) {
-			insereCleNoeud(cle,A->nb,A->cle);
-		} else {		
-			for (i = 0; i < A->nb; i++) {
-				if(cle < A->cle[i]) insertion(cle, A->enfant[i], A);
+		A->enfant[0]=NULL;
+		A->enfant[1]=NULL;
+	} 
+	else {
+		// Eclatement du noeud courant si le noeud comporte 3 éléments
+		if(A->nb == 3){
+			 eclaterNoeud(A,P);
+			 insertion(cle,P,NULL);
+		}
+		if(est_feuille(A)) {
+			insereCleNoeud(cle,A);
+		} 
+		else {		
+			i=A->nb;
+			while((i <= 0) && (cle > A->cle[i])) {i--;}
+			if(i!=0){
+			insertion(cle, A->enfant[i-1], A);
+			}
+			else{
+				insertion(cle, A->enfant[i], A);
 			}
 		}
 	}	
 	
 }
 
+// Crée un arbre avec des entrées au clavier
 Arbre creer_arbre(){
 	int cle;
 	Arbre A = NULL;
@@ -230,8 +266,9 @@ Arbre creer_arbre(){
 	do{
 		printf("Cle à insérer : ");
 		scanf("%d",&cle);
-		//insertion(cle,A,NULL);
+		insertion(cle,A,NULL);
 	}while(cle>0);
+	parcours(A);
 	return A;
 }
 
@@ -283,17 +320,46 @@ int main(void) {
 	printf("\n3 est dans A : %d\n",recherche_b(3,A));
 	printf("8 est dans A : %d\n",recherche_b(8,A));
 	printf("3 est dans A ?\n");
-	parcours(recherche_p(3,A));
-	printf("\n8 est dans A ?\n");
-	parcours(recherche_p(8,A));
-	printf("\n5 est dans A ?\n");
-	parcours(recherche_p(5,A));
+	aff_noeud(recherche_p(3,A));
+	printf("8 est dans A ?\n");
+	aff_noeud(recherche_p(8,A));
+	printf("5 est dans A ?\n");
+	aff_noeud(recherche_p(5,A));
 	
-	printf("\nhauteur A : %d\n A != NULL : %d\n",hauteur(A), A!=NULL);
+	printf("\nTest Hauteur \nhauteur A : %d\n A != NULL : %d\n",hauteur(A), A!=NULL);
+	
+	printf("\nTest éclatement\nracine avant éclatement : ");
+	aff_noeud(A);
 	eclaterNoeud(A,NULL);
+	printf("racine après éclatement : ");
+	aff_noeud(A);
 	parcours(A);
-	printf("\nhauteur A : %d\n A != NULL : %d\n",hauteur(A), A!=NULL);
+	printf("\nNouvelle hauteur de A : %d\n",hauteur(A));
 	
+	// Recherches OK. Eclatement de la racine OK.
+	// Reste à tester l'insertion
 	
+	// TEST insertion clé noeud
+	Arbre N;
+	N=malloc(sizeof(Noeud));
+	N->nb=2;
+	N->cle[0]=5;
+	N->cle[1]=10;
+	N->enfant[0]=NULL;
+	N->enfant[1]=NULL;
+	N->enfant[2]=NULL;
+	insereCleNoeud(52,N);
+	aff_noeud(N);
+	printf("est feuille ? %d\n",est_feuille(N));
+	
+	// TEST insertion dans un arbre
+	insertion(6,N,NULL);
+	parcours(N);
+	insertion(21,N,NULL);
+	parcours(N);
+
+	Arbre B;
+	B = creer_arbre();
+	parcours(B);
 	return 0;
 }
