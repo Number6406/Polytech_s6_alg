@@ -129,32 +129,33 @@ Arbre recherche_p (int x, Arbre A) {
 void eclaterNoeud(Arbre A, Arbre P){
 	if(A->nb == 3){
 		
-		Arbre racine;
-		Arbre nd;
+		Arbre nga;
+		Arbre ndr;
 		
 		// Recupére la 3eme valeur et ses fils
-		nd = malloc(sizeof(Noeud));
-		nd->nb = 1;
-		nd->cle[0] = A->cle[2];
-		nd->enfant[0] = A->enfant[2];
-		nd->enfant[1] = A->enfant[3];
+		ndr = malloc(sizeof(Noeud));
+		ndr->nb = 1;
+		ndr->cle[0] = A->cle[2];
+		ndr->enfant[0] = A->enfant[2];
+		ndr->enfant[1] = A->enfant[3];
 			
 		if(P == NULL){//Eclatement racine
 			
-			// Crée le noeud racine, en mettant A à gauche
-			racine = malloc(sizeof(Noeud));
-			racine->nb = 1;
-			racine->cle[0] = A->cle[1];
-			racine->enfant[0] = A;
-			racine->enfant[1] = nd;
+			// Crée le noeud gauche, en mettant A en haut
+			nga = malloc(sizeof(Noeud));
+			nga->nb = 1;
+			nga->cle[0] = A->cle[0];
+			nga->enfant[0] = A->enfant[0];
+			nga->enfant[1] = A->enfant[1];
 			
 			// Modifie le noeud A
-			A->nb=1;
+			A->cle[0] = A->cle[1];
+			A->enfant[0]=nga;
+			A->enfant[1]=ndr;
 			A->enfant[2] = NULL;
 			A->enfant[3] = NULL;
+			A->nb=1;
 			
-			// Renvoie la racine via A
-			A = racine;
 		}
 		else{ // Eclatement avec insertion en P (supposant P de taille <=2)
 			int i,j;
@@ -172,7 +173,7 @@ void eclaterNoeud(Arbre A, Arbre P){
 			P->nb = P->nb + 1;
 			P->cle[i]=cle;
 			P->enfant[i]=A;
-			P->enfant[i+1]=nd;
+			P->enfant[i+1]=ndr;
 			
 		}
 		
