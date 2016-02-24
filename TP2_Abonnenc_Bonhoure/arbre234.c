@@ -259,9 +259,27 @@ int hauteur(Arbre A){
 	}
 }
 
+void aff(Arbre A) {
+	int i;
+	if (A != NULL){
+		for(i=0; i < A->nb;i++){
+			printf("%d ",A->cle[i]);
+		}
+		for(i=0; i<=A->nb; i++) {
+			aff(A->enfant[i]);
+			printf("|");
+		}
+		
+		printf("\n");
+	}
+}
+
 int main(void) {
 	Arbre A = test_eclat();
-	parcours(A);
+	
+	aff(A);
+	
+	//parcours(A);
 	printf("\n3 est dans A : %d\n",recherche_b(3,A));
 	printf("8 est dans A : %d\n",recherche_b(8,A));
 	printf("3 est dans A ?\n");
@@ -275,6 +293,7 @@ int main(void) {
 	eclaterNoeud(A,NULL);
 	parcours(A);
 	printf("\nhauteur A : %d\n A != NULL : %d\n",hauteur(A), A!=NULL);
+	
 	
 	return 0;
 }
