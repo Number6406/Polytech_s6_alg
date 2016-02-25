@@ -337,8 +337,6 @@ int main(void) {
 	// TEST insertion dans un arbre
 	insertion(6,N,NULL);
 	parcours(N);
-	insertion(21,N,NULL);
-	parcours(N);
 	
 	
 	
