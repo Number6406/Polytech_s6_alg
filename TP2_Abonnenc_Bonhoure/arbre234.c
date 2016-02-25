@@ -296,10 +296,28 @@ int hauteur(Arbre A){
 	}
 }
 
+void aff(Arbre A) {
+	int i;
+	if (A != NULL){
+		for(i=0; i < A->nb;i++){
+			printf("%d ",A->cle[i]);
+		}
+		for(i=0; i<=A->nb; i++) {
+			aff(A->enfant[i]);
+			printf("|");
+		}
+		
+		printf("\n");
+	}
+}
+
 int main(void) {
-	/*Arbre A = test_eclat();
-	parcours(A);
-	printf("Recherches \n\n3 est dans A : %d\n",recherche_b(3,A));
+	Arbre A = test_eclat();
+	
+	aff(A);
+	
+	//parcours(A);
+	printf("\n3 est dans A : %d\n",recherche_b(3,A));
 	printf("8 est dans A : %d\n",recherche_b(8,A));
 	printf("3 est dans A ?\n");
 	aff_noeud(recherche_p(3,A));
@@ -317,7 +335,7 @@ int main(void) {
 	aff_noeud(A);
 	parcours(A);
 	printf("\nNouvelle hauteur de A : %d\n",hauteur(A));
-	*/
+	
 	// Recherches OK. Eclatement de la racine OK.
 	// Reste à tester l'insertion
 	
@@ -337,8 +355,6 @@ int main(void) {
 	// TEST insertion dans un arbre
 	insertion(6,N,NULL);
 	parcours(N);
-	
-	
 	
 	Arbre B;
 	B = creer_arbre();
