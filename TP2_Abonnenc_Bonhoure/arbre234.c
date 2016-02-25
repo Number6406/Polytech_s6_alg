@@ -222,18 +222,21 @@ int est_feuille(Arbre A){
 	}
 	return b;
 }
+
 // insérer un élément dans un Arbre
 ///TODO
 void insertion (int cle, Arbre A, Arbre P){
-	int i;
 
 	// Si le noeud n'a pas d'élément, on ne peut pas descendre plus loin, donc on insère
 	if(A == NULL) {
+		printf("coucou");
 		A = malloc(sizeof(Noeud));
 		A->nb = 1;
 		A->cle[0] = cle;
 		A->enfant[0]=NULL;
 		A->enfant[1]=NULL;
+		parcours(A);
+		printf("On sort\n");
 	} 
 	else {
 		// Eclatement du noeud courant si le noeud comporte 3 éléments
@@ -244,14 +247,20 @@ void insertion (int cle, Arbre A, Arbre P){
 		if(est_feuille(A)) {
 			insereCleNoeud(cle,A);
 		} 
-		else {		
-			i=A->nb;
-			while((i <= 0) && (cle > A->cle[i])) {i--;}
-			if(i!=0){
-			insertion(cle, A->enfant[i-1], A);
+		else {
+			if(A->nb==1){
+				if(cle < A->cle[0]) insertion(cle,A->enfant[0],A);
+				else insertion(cle,A->enfant[1],A);
 			}
-			else{
-				insertion(cle, A->enfant[i], A);
+			else if (A->nb==2){
+				if(cle < A->cle[0]) insertion(cle,A->enfant[0],A);
+				else {
+					if(cle < A->cle[1]) insertion(cle,A->enfant[1],A);
+					else insertion(cle,A->enfant[2],A);
+				}
+			}
+			else{	
+				printf("Erreur de taille de noeud. Noeud non éclaté en chemin ! \n");
 			}
 		}
 	}	
@@ -261,14 +270,21 @@ void insertion (int cle, Arbre A, Arbre P){
 // Crée un arbre avec des entrées au clavier
 Arbre creer_arbre(){
 	int cle;
-	Arbre A = NULL;
+	Arbre A;
 	printf("Création d'un arbre. Pour arreter, entrez un entier négatif.\n");
+	printf("Cle à insérer : ");
+	scanf("%d",&cle);
+	A=malloc(sizeof(Noeud));
+	A->nb=1;
+	A->cle[0]=cle;
+	A->enfant[0]=NULL;
+	A->enfant[1]=NULL;
 	do{
 		printf("Cle à insérer : ");
 		scanf("%d",&cle);
 		insertion(cle,A,NULL);
+		parcours(A);
 	}while(cle>0);
-	parcours(A);
 	return A;
 }
 
@@ -316,7 +332,7 @@ int main(void) {
 	
 	aff(A);
 	
-	//parcours(A);
+	/*//parcours(A);
 	printf("\n3 est dans A : %d\n",recherche_b(3,A));
 	printf("8 est dans A : %d\n",recherche_b(8,A));
 	printf("3 est dans A ?\n");
@@ -335,7 +351,7 @@ int main(void) {
 	aff_noeud(A);
 	parcours(A);
 	printf("\nNouvelle hauteur de A : %d\n",hauteur(A));
-	
+	*/
 	// Recherches OK. Eclatement de la racine OK.
 	// Reste à tester l'insertion
 	
@@ -348,16 +364,26 @@ int main(void) {
 	N->enfant[0]=NULL;
 	N->enfant[1]=NULL;
 	N->enfant[2]=NULL;
-	insereCleNoeud(52,N);
+	insereCleNoeud(12,N);
 	aff_noeud(N);
 	printf("est feuille ? %d\n",est_feuille(N));
 	
 	// TEST insertion dans un arbre
-	insertion(6,N,NULL);
+	insertion(7,N,NULL);
+	parcours(N);
+	insertion(53,N,NULL);
 	parcours(N);
 	
+	parcours(A);
+	insertion(22,A,NULL);
+	parcours(A);
+	A=NULL;
+	insertion(5,A,NULL);
+	parcours(A);
+	
 	Arbre B;
-	B = creer_arbre();
+	B=creer_arbre();
+	printf("B NULL ? : %d",B==NULL);
 	parcours(B);
 	return 0;
 }
