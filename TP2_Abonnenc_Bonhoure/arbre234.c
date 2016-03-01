@@ -310,12 +310,17 @@ Arbre creer_arbre(){
 	A->cle[0]=cle;
 	A->enfant[0]=NULL;
 	A->enfant[1]=NULL;
-	do{
-		printf("Cle à insérer : ");
-		scanf("%d",&cle);
+	
+	printf("Cle à insérer : ");
+	scanf("%d",&cle);
+		
+	while(cle>0) {
 		insertion(cle,A,NULL);
 		parcours(A);
-	}while(cle>0);
+		printf("Cle à insérer : ");
+		scanf("%d",&cle);
+	}
+	
 	return A;
 }
 
@@ -392,8 +397,8 @@ void actionArbre(Arbre A) {
 				scanf("%d",&cle);
 				recherche_p(cle, A);
 				break;
-			case 5 : hauteur(A); break;
-			case 6 : nbElem(A); break;
+			case 5 : printf("Hauteur de l'arbre A : %d\n",hauteur(A)); break;
+			case 6 : printf("Nombre d'éléments de l'arbre A : %d\n",nbElem(A)); break;
 		}
 		
 	} while(sc);
