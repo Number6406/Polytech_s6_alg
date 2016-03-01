@@ -2,6 +2,7 @@
 // TD2 ALG, Arbres 234
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 typedef struct Noeud Noeud;
@@ -310,12 +311,17 @@ Arbre creer_arbre(){
 	A->cle[0]=cle;
 	A->enfant[0]=NULL;
 	A->enfant[1]=NULL;
-	do{
-		printf("Cle à insérer : ");
-		scanf("%d",&cle);
+	
+	printf("Cle à insérer : ");
+	scanf("%d",&cle);
+		
+	while(cle>0) {
 		insertion(cle,A,NULL);
 		parcours(A);
-	}while(cle>0);
+		printf("Cle à insérer : ");
+		scanf("%d",&cle);
+	}
+	
 	return A;
 }
 
@@ -393,27 +399,114 @@ void liberer(Arbre A){
 	}
 }
 
-void aff(Arbre A) {
-	int i;
-	if (A != NULL){
-		for(i=0; i < A->nb;i++){
-			printf("%d ",A->cle[i]);
+// Calcule le nombre d'éléments d'un arbres 2-3-4
+int nbElem(Arbre A) {
+	if(A == NULL) return 0;
+	else {
+		int i;
+		int nbCourr = A->nb;
+		for(i = 0; i <= A->nb; i++) {
+			nbCourr += nbElem(A->enfant[i]);
 		}
-		for(i=0; i<=A->nb; i++) {
-			aff(A->enfant[i]);
-			printf("|");
-		}
-		
-		printf("\n");
+		return nbCourr;
 	}
 }
 
-int main(void) {
-	Arbre A = test_eclat();
+void aff(Arbre A, char *esp) {
+	int i;
+	if (A != NULL){
+		printf("%s", esp);
+		for(i=0; i < A->nb;i++){
+			printf("%d - ",A->cle[i]);
+		}
+		strcat(esp, " ");
+		for(i=0; i<=A->nb; i++) {
+			printf("\n");
+			aff(A->enfant[i], esp);
+		}
+	}
+}
+
+void actionArbre(Arbre A) {
+	int sc = 0;
+	do {
+		printf("===============================\n");
+		printf("Actions à effectuer sur l'Arbre\n");
+		printf("===============================\n");
+		printf("1 : Insérer une clé\n");
+		printf("2 : Supprimer une clé\n");
+		printf("3 : Afficher l'arbre\n");
+		printf("4 : Trouver une clé\n");
+		printf("5 : Afficher la hauteur de l'arbre\n");
+		printf("6 : Afficher le nombre d'éléments de l'arbre\n");
+		printf("0 : Quitter\n");
+		
+		scanf("%d",&sc);
+		char esp[50];
+		switch(sc) {
+			int cle;
+			case 1 :
+				printf("Choix de la clé à insérer : \n");
+				scanf("%d",&cle);
+				insertion(cle, A, NULL);
+				break;
+			case 2 :
+				printf("Choix de la clé à supprimer : \n");
+				scanf("%d",&cle);
+				//TODO fonction suppression
+				break;
+			case 3 : 
+				esp[0]=0;
+				parcours(A); aff(A, esp); break;
+			case 4 :
+				printf("Choix de la clé à rechercher : \n");
+				scanf("%d",&cle);
+				recherche_p(cle, A);
+				break;
+			case 5 : printf("Hauteur de l'arbre A : %d\n",hauteur(A)); break;
+			case 6 : printf("Nombre d'éléments de l'arbre A : %d\n",nbElem(A)); break;
+		}
+		
+	} while(sc);
+}
+
+void arbreMain() {
+	Arbre A = creer_arbre();
+	actionArbre(A);
+}
+
+void programme() {
+	int sc = 0;
 	
+	printf("Bienvenue dans ce programme de test, permettant d'effectuer des opérations sur un arbre 2-3-4");
+	
+	do {
+		printf("Choisir quoi faire parmis les choix suivants : \n");
+		printf("1 : Créer un arbre depuis un fichier\n");
+		printf("2 : Créer un arbre à la main\n");
+		printf("0 : Quitter\n");
+		
+		scanf("%d", &sc);
+		
+		switch(sc) {
+			case 1 : break;//TODO
+			case 2 : arbreMain(); break;
+		}
+	} while(sc);
+}
+
+int main(void) {
+	programme();
+	return 0;
+}
+
+/*
+ Arbre A = test_eclat();
+	
+	printf("L'arbre est composé de %d éléments.\n", nbElem(A));
 	aff(A);
 	
-	/*//parcours(A);
+	parcours(A);
 	printf("\n3 est dans A : %d\n",recherche_b(3,A));
 	printf("8 est dans A : %d\n",recherche_b(8,A));
 	printf("3 est dans A ?\n");
@@ -432,7 +525,7 @@ int main(void) {
 	aff_noeud(A);
 	parcours(A);
 	printf("\nNouvelle hauteur de A : %d\n",hauteur(A));
-	*/
+	
 	// Recherches OK. Eclatement de la racine OK.
 	// Reste à tester l'insertion
 	
@@ -446,6 +539,9 @@ int main(void) {
 	N->enfant[1]=NULL;
 	N->enfant[2]=NULL;
 	insereCleNoeud(12,N);
+	
+	printf("L'arbre est composé de %d éléments.\n", nbElem(N));
+	
 	aff_noeud(N);
 	printf("est feuille ? %d\n",est_feuille(N));
 	
@@ -477,4 +573,4 @@ int main(void) {
 	liberer(N);
 	liberer(B);
 	return 0;
-}
+*/
