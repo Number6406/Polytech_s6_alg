@@ -81,6 +81,31 @@ Arbre test_eclat(void){
 	return A;
 }
 
+
+// Hauteur en recupérant le maximum des hauteurs de chaque sous arbres
+int hauteur_naive(Arbre A){
+	int i;
+	int max, courant;
+	if (A == NULL) return 0;
+	else {
+		max = hauteur_naive(A->enfant[0]);
+		for(i=1;i<=A->nb;i++){
+			courant = hauteur_naive(A->enfant[i]);
+			if(courant > max) max = courant;
+		}
+		return 1+max;
+	}
+}
+
+// Hauteur considérant que toutes les feuilles sont au même niveau
+int hauteur(Arbre A){
+	
+	if (A == NULL) return 0;
+	else {
+		return 1+hauteur(A->enfant[0]);
+	}
+}
+
 // Parcoure l'abre en ordre infixé (pour un affichage dans l'ordre croissant
 void parcours(Arbre A){
 	
@@ -89,7 +114,7 @@ void parcours(Arbre A){
 		if (A != NULL){
 			for(i=0; i < A->nb;i++){
 				aux(A->enfant[i]);
-				printf("%d ",A->cle[i]);
+				printf("[%d,%d] ",A->cle[i],hauteur_naive(A));
 			}
 			aux(A->enfant[i]);
 		}
@@ -142,7 +167,7 @@ Arbre recherche_p (int x, Arbre A) {
 }
 
 // Eclater les noeuds de taille 3 !
-void eclaterNoeud(Arbre A, Arbre P){
+Arbre eclaterNoeud(Arbre A, Arbre P){
 	if(A->nb == 3){
 		
 		Arbre nga;
@@ -172,16 +197,22 @@ void eclaterNoeud(Arbre A, Arbre P){
 			A->enfant[3] = NULL;
 			A->nb=1;
 			
+			return A;
 		}
 		else{ // Eclatement avec insertion en P (supposant P de taille <=2)
 			int i,j;
-			int cle = A->cle[1];
+			int cle = A->cle[1]; // Recupération de la clé du milieu de l'arbre
+			// Garde la clé de gauche dans l'arbre A et ses deux fils
 			A->nb = 1;
 			A->enfant[2] = NULL;
 			A->enfant[3] = NULL;
 			
+			// Insertion en P au bon endroit
+			
 			i=0;
-			while(i<P->nb && cle<P->cle[i])i++;
+			while(i<P->nb && cle > P->cle[i])i++; // Avancer tant que la clé est plus grande
+			
+			//décaler les clefs et les enfants vers la droite
 			for(j=P->nb;j>i;j--){
 				P->cle[j]=P->cle[j-1];
 				P->enfant[j+1]=P->enfant[j];
@@ -191,9 +222,11 @@ void eclaterNoeud(Arbre A, Arbre P){
 			P->enfant[i]=A;
 			P->enfant[i+1]=ndr;
 			
+			return P;
 		}
 		
 	}
+	return A;
 	
 }
 
@@ -202,7 +235,7 @@ void insereCleNoeud(int cle, Arbre A) {
 	int i, j;
 		
 	i=0;
-	while(i<A->nb&&cle>A->cle[i])i++; // Avancer tant que la clé est plus petite
+	while(i<A->nb && cle > A->cle[i] )i++; // Avancer tant que la clé est plus grande
 	//décaler les clefs vers la droite
 	for(j=A->nb;j>i;j--){
 		A->cle[j]=A->cle[j-1];
@@ -211,7 +244,6 @@ void insereCleNoeud(int cle, Arbre A) {
 	A->cle[i]=cle;
 	for(i=0;i<=A->nb;i++) {A->enfant[i]=NULL;}
 }
-
 
 
 int est_feuille(Arbre A){
@@ -224,27 +256,26 @@ int est_feuille(Arbre A){
 }
 
 // insérer un élément dans un Arbre
-///TODO
 void insertion (int cle, Arbre A, Arbre P){
 
 	// Si le noeud n'a pas d'élément, on ne peut pas descendre plus loin, donc on insère
 	if(A == NULL) {
-		printf("coucou");
+		printf("coucou Je suis un arbre null ! \n");
 		A = malloc(sizeof(Noeud));
 		A->nb = 1;
 		A->cle[0] = cle;
 		A->enfant[0]=NULL;
 		A->enfant[1]=NULL;
 		parcours(A);
-		printf("On sort\n");
+		printf("\n");
 	} 
 	else {
 		// Eclatement du noeud courant si le noeud comporte 3 éléments
 		if(A->nb == 3){
-			 eclaterNoeud(A,P);
-			 insertion(cle,P,NULL);
+			 A = eclaterNoeud(A,P);
+			 insertion(cle,A,NULL);
 		}
-		if(est_feuille(A)) {
+		else if(est_feuille(A)) {
 			insereCleNoeud(cle,A);
 		} 
 		else {
@@ -288,27 +319,14 @@ Arbre creer_arbre(){
 	return A;
 }
 
-// Hauteur en recupérant le maximum des hauteurs de chaque sous arbres
-int hauteur_naive(Arbre A){
-	int i;
-	int max, courant;
-	if (A == NULL) return 0;
-	else {
-		max = hauteur_naive(A->enfant[0]);
-		for(i=1;i<=A->nb;i++){
-			courant = hauteur_naive(A->enfant[i]);
-			if(courant > max) max = courant;
+// Libérer un Arbre
+void liberer(Arbre A){
+	if(A!=NULL){
+		int i;
+		for (i=0; i <= A->nb; i++){
+			liberer(A->enfant[i]);
 		}
-		return 1+max;
-	}
-}
-
-// Hauteur considérant que toutes les feuilles sont au même niveau
-int hauteur(Arbre A){
-	
-	if (A == NULL) return 0;
-	else {
-		return 1+hauteur(A->enfant[0]);
+		free(A);
 	}
 }
 
@@ -462,6 +480,7 @@ int main(void) {
 	insertion(53,N,NULL);
 	parcours(N);
 	
+	printf("AUTRE ARBRE\n");
 	parcours(A);
 	insertion(22,A,NULL);
 	parcours(A);
@@ -470,8 +489,15 @@ int main(void) {
 	parcours(A);
 	
 	Arbre B;
-	B=creer_arbre();
+	//B=creer_arbre();
 	printf("B NULL ? : %d",B==NULL);
 	parcours(B);
+	
+	printf("libA\n");
+	liberer(A);
+	printf("libN\n");
+	liberer(N);
+	printf("libB\n");
+	liberer(B);
 	return 0;
 */
