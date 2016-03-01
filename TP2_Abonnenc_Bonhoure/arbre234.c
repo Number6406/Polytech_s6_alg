@@ -2,6 +2,7 @@
 // TD2 ALG, Arbres 234
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 typedef struct Noeud Noeud;
@@ -348,18 +349,18 @@ int nbElem(Arbre A) {
 	}
 }
 
-void aff(Arbre A) {
+void aff(Arbre A, char *esp) {
 	int i;
 	if (A != NULL){
+		printf("%s", esp);
 		for(i=0; i < A->nb;i++){
-			printf("%d ",A->cle[i]);
+			printf("%d - ",A->cle[i]);
 		}
+		strcat(esp, " ");
 		for(i=0; i<=A->nb; i++) {
-			aff(A->enfant[i]);
-			printf("|");
+			printf("\n");
+			aff(A->enfant[i], esp);
 		}
-		
-		printf("\n");
 	}
 }
 
@@ -378,7 +379,7 @@ void actionArbre(Arbre A) {
 		printf("0 : Quitter\n");
 		
 		scanf("%d",&sc);
-		
+		char esp[50];
 		switch(sc) {
 			int cle;
 			case 1 :
@@ -391,7 +392,9 @@ void actionArbre(Arbre A) {
 				scanf("%d",&cle);
 				//TODO fonction suppression
 				break;
-			case 3 : parcours(A); break;
+			case 3 : 
+				esp[0]=0;
+				parcours(A); aff(A, esp); break;
 			case 4 :
 				printf("Choix de la clé à rechercher : \n");
 				scanf("%d",&cle);
