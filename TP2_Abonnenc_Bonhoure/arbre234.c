@@ -319,6 +319,69 @@ Arbre creer_arbre(){
 	return A;
 }
 
+
+// Crée un arbre avec des entrées dans un fichier
+Arbre lire_arbre(){
+	int cle,i,iter;
+	Arbre A = NULL;
+	FILE* fichier = NULL;
+	
+	printf("Création d'un arbre depuis un fichier.\n");
+	
+	fichier = fopen("entree.txt","r");
+	
+	if (fichier != NULL)
+    {
+		fscanf(fichier,"%d",&iter); 
+		
+		if(iter>0){
+			fscanf(fichier, "%d", &cle);
+			A=malloc(sizeof(Noeud));
+			A->nb=1;
+			A->cle[0]=cle;
+			A->enfant[0]=NULL;
+			A->enfant[1]=NULL;
+			for(i=1;i<iter;i++){
+				fscanf(fichier, "%d", &cle);
+				insertion(cle,A,NULL);
+			}
+		}
+		fclose(fichier);
+	}
+	else
+	{
+		printf("Impossible d'ouvrir le fichier entree.txt");
+    }
+	return A;
+}
+
+// Ajouter des clefs depuis un fichier
+void ajout_arbre(Arbre A){
+	int cle,i,iter;
+	FILE* fichier = NULL;
+	
+	printf("Ajout de cles à un arbre depuis un fichier.\n");
+	
+	fichier = fopen("entree.txt","r");
+	
+	if (fichier != NULL)
+    {
+		fscanf(fichier,"%d",&iter); 
+		
+		if(iter>0){
+			for(i=0;i<iter;i++){
+				fscanf(fichier, "%d", &cle);
+				insertion(cle,A,NULL);
+			}
+		}
+		fclose(fichier);
+	}
+	else
+	{
+		printf("Impossible d'ouvrir le fichier entree.txt");
+    }
+}
+
 // Libérer un Arbre
 void liberer(Arbre A){
 	if(A!=NULL){
@@ -396,20 +459,22 @@ int main(void) {
 	parcours(A);
 	insertion(22,A,NULL);
 	parcours(A);
-	A=NULL;
 	insertion(5,A,NULL);
 	parcours(A);
 	
 	Arbre B;
-	//B=creer_arbre();
-	printf("B NULL ? : %d",B==NULL);
+	B = lire_arbre();
+	printf("Lecture depuis un fichier :\n");
 	parcours(B);
 	
-	printf("libA\n");
+	A = test_eclat();
+	parcours(A);
+	ajout_arbre(A);
+	parcours(A);
+	
+	
 	liberer(A);
-	printf("libN\n");
 	liberer(N);
-	printf("libB\n");
 	liberer(B);
 	return 0;
 }
