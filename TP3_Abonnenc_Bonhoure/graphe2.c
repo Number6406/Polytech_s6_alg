@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 
-typedef struct a *parc_t ;
+typedef struct arc *parc_t ;
 
 
 typedef struct n {
@@ -11,20 +11,50 @@ typedef struct n {
 } noeud_t, *pnoeud_t ;
 
 
-typedef struct a {
+typedef struct arc {
   int         etiquette_arc ; // etiquette de l arc
   pnoeud_t    noeud_dest ; // identificateur du noeud
-  struct a *  suivant_arc ; // arc suivanr
+  struct arc *  suivant_arc ; // arc suivant
 } arc_t, *parc_t ;
 
 
-int nombre_arcs (pnoeud_t p) {
+int nb_arc_list(parc_t l){
+	int nb = 0;
+	parc_t tmp = l;
+	while(tmp!=NULL){
+		tmp = tmp->suivant_arc;
+		nb++;
+	}
+	return nb;
+}
 
+int nombre_arcs (pnoeud_t p) {
+	int somme = 0;
+	pnoeud_t tmp = p;
+	while(tmp != NULL){
+		somme += nb_arc_list(tmp->liste_arcs);
+		tmp = tmp->suivant_noeud;
+		
+	}
+	return somme; // MDIFIIIIIIERRRRR
 }
 
 
 int degre_graphe (pnoeud_t p) {
- 
+	int deg = 0;
+	
+	int deg_noeud(pnoeud_t p ){
+		return nb_arc_list(p->liste_arcs);
+	}
+	
+	pnoeud_t tmp = p;
+	while(tmp!=NULL){
+		int d = deg_noeud(tmp);
+		if(d>deg) deg = d;
+		tmp = tmp->suivant_noeud;
+	}
+	
+	return deg;
 }
 
 
