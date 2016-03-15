@@ -76,8 +76,8 @@ int independant (pnoeud_t p) {
 			}
 			j++;
 		}
-		col = sommec <=1;
-		lig = sommel <=1;
+		col = (sommec <=1);
+		lig = (sommel <=1);
 		i++;
 	}
 	return(col && lig);
@@ -96,22 +96,26 @@ int complet (pnoeud_t p) {
 			j++;
 		}
 		fin = j!=nb_noeuds;
+		i++;
 	}
 	return (i==nb_noeuds && j==nb_noeuds);
 }
 
 int main (int argc, char **argv) {
 
-	nb_noeuds = 10;
+	nb_noeuds = 2;
 	pnoeud_t p = 1;
 	
 	init();
-	arcs[0][1] = 1;
-	arcs[0][2] = 5;
-	arcs[1][2] = 12;
+	arcs[0][0] = 1;
+	arcs[0][1] = 5;
+	arcs[1][0] = 5;
+	arcs[1][1] = 5;
 	
 	printf("Nombre de noeuds : %d\n", nombre_arcs(p));
 	printf("Degré du graphe : %d\n", degre_graphe(p));
+	printf("Graphe indépendant : %d\n",independant(p));
+	printf("Graphe complet : %d\n", complet(p));
 	
 	return 0;
 }
