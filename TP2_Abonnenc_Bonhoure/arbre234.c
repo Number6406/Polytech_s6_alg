@@ -356,9 +356,9 @@ void aff(Arbre A, char *esp) {
 		for(i=0; i < A->nb;i++){
 			printf("%d - ",A->cle[i]);
 		}
+		printf("\n");
 		strcat(esp, " ");
 		for(i=0; i<=A->nb; i++) {
-			printf("\n");
 			aff(A->enfant[i], esp);
 		}
 	}
