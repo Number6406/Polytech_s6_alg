@@ -18,30 +18,23 @@ typedef struct a {
 } arc_t, *parc_t ;
 
 
-int nombre_arcs (pnoeud_t p)
-{
+int nombre_arcs (pnoeud_t p) {
 
 }
 
 
-
-int degre_graphe (pnoeud_t p)
-{
+int degre_graphe (pnoeud_t p) {
  
 }
 
 
-
-int independant (pnoeud_t p)
-{
+int independant (pnoeud_t p) {
   /* Les aretes du graphe n'ont pas de sommet en commun */
 
 }
 
 
-
-int complet (pnoeud_t p)
-{
+int complet (pnoeud_t p) {
   /* Toutes les paires de sommet du graphe sont jointes par un arc */
   
 }

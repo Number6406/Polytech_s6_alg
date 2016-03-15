@@ -96,6 +96,7 @@ int complet (pnoeud_t p) {
 			j++;
 		}
 		fin = j!=nb_noeuds;
+		i++;
 	}
 	return (i==nb_noeuds && j==nb_noeuds);
 }
