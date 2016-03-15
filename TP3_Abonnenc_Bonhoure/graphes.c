@@ -11,8 +11,8 @@ typedef int graphe_m[TAILLE][TAILLE];
 void initGrapheM(graphe_m G) {
 	int i, j;
 
-	for(i=0; i<X; i++) {
-		for(j=0; j<X; j++) {
+	for(i=0; i<TAILLE; i++) {
+		for(j=0; j<TAILLE; j++) {
 			G[i][j] = INT_MAX;
 		}
 	}
@@ -23,8 +23,8 @@ int nbArcsM(graphe_m G) {
 	int i, j;
 	int somme = 0;
 
-	for(i=0; i<X; i++) {
-		for(j=0; j<X; j++) {
+	for(i=0; i<TAILLE; i++) {
+		for(j=0; j<TAILLE; j++) {
 			if(G[i][j]) somme++;
 		}
 	}
