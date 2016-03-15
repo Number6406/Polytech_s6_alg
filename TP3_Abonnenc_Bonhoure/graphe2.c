@@ -38,6 +38,25 @@ pnoeud_t creer_graphe(void){
 		P=C;
 	}
 	
+	P = G;
+	char rep;
+	while(P!=NULL){
+		printf("Noeud %d : A t'il des arcs ? o/n ",P->etiquette_noeud);
+		scanf(" %c",&rep);
+		while(rep == 'o' || rep == 'O'){
+			int etiq;
+			printf("Vers quel noeud va t'il ? ");
+			scanf("%d",&etiq);
+			
+			ajouter_arc(P,etiq);
+			
+			
+			printf("Un autre arc ? o/n ");
+			scanf(" %c",&rep);
+		}
+		P = P->suivant_noeud;
+	}
+	
 	printf("Fin de la création de votre graphe.\n");
 	
 	return G;
