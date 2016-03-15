@@ -427,7 +427,8 @@ int nbElem(Arbre A) {
 	}
 }
 
-
+<<<<<<< HEAD
+=======
 void aff(Arbre A, char *esp) {
 	int i;
 	if (A != NULL){
@@ -442,6 +443,7 @@ void aff(Arbre A, char *esp) {
 		}
 	}
 }
+>>>>>>> 192b3f476f2ce15372c9902b80686f97f80ccf4c
 
 void actionArbre(Arbre A) {
 	int sc = 0;
