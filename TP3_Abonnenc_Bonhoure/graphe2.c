@@ -18,8 +18,31 @@ typedef struct arc {
   struct arc *suivant_arc ; // arc suivant
 } arc_t, *parc_t ;
 
+int etiquetteArcs = 1;
 
-pnoeud_t creer_graphe(void){
+int ajouter_arc(pnoeud_t graphe, pnoeud_t noeudParent, int etiqNoeudDirecteur) {
+	
+	pnoeud_t noeudPotentiel = graphe; //On parcours le graphe pour trouver le noeud en question
+	while(noeudPotentiel != NULL && noeudPotentiel->etiquette_noeud != etiqNoeudDirecteur){
+		noeudPotentiel = noeudPotentiel->suivant_noeud;
+	}
+	
+	if(noeudPotentiel != NULL) { //On définit le noeud sur lequel pointe l'arc s'il existe
+		parc_t nv_arc = malloc(sizeof(parc_t)); //Allocation dynamique de la mémoire d'un nouvel arc
+		
+		nv_arc->etiquette_arc = etiquetteArcs++;
+		nv_arc->noeud_dest = noeudPotentiel;
+		nv_arc->suivant_arc = noeudParent->liste_arcs;
+		noeudParent->liste_arcs = nv_arc;
+		
+		return 0;
+	} else {
+		return 1;
+	}
+	
+}
+
+pnoeud_t creer_graphe(){
 	pnoeud_t G,P,C;
 	int nb_noeuds;
 	unsigned int i;
@@ -33,7 +56,7 @@ pnoeud_t creer_graphe(void){
 	for (i = 1; i < nb_noeuds; i++){
 		C = malloc(sizeof(noeud_t));
 		printf("Quelle est l'étiquette de votre noeud ? ");
-		scanf("%d",&G->etiquette_noeud);
+		scanf("%d",&C->etiquette_noeud);
 		P->suivant_noeud = C;
 		P=C;
 	}
@@ -48,8 +71,10 @@ pnoeud_t creer_graphe(void){
 			printf("Vers quel noeud va t'il ? ");
 			scanf("%d",&etiq);
 			
-			ajouter_arc(P,etiq);
-			
+			if(ajouter_arc(G,P,etiq) == 1) {
+				//erreur d'ajout
+				printf("L'étiquette spécifiée n'existe pas. Rien n'a été créé.\n");
+			}
 			
 			printf("Un autre arc ? o/n ");
 			scanf(" %c",&rep);
@@ -60,6 +85,24 @@ pnoeud_t creer_graphe(void){
 	printf("Fin de la création de votre graphe.\n");
 	
 	return G;
+}
+
+void affGraphe(pnoeud_t graphe) {
+	
+	pnoeud_t tmpNoeuds = graphe;
+	while(tmpNoeuds != NULL) {
+		printf("Noeud %d |", tmpNoeuds->etiquette_noeud);
+		
+		parc_t tmpArcs = tmpNoeuds->liste_arcs;
+		while(tmpArcs != NULL) {
+			printf(" Arc %d (Noeud %d) -", tmpArcs->etiquette_arc, tmpArcs->noeud_dest->etiquette_noeud);
+			tmpArcs = tmpArcs->suivant_arc;
+		}
+		
+		printf("\n");
+		tmpNoeuds = tmpNoeuds->suivant_noeud;
+	}
+	
 }
 
 int nb_arc_list(parc_t l){
@@ -156,6 +199,10 @@ int complet (pnoeud_t p) {
 
 int main (int argc, char **argv)
 {
+	pnoeud_t graphe = creer_graphe();
+	affGraphe(graphe);
+	
+	
 	return 0;
 }
 
