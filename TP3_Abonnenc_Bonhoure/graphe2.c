@@ -18,7 +18,7 @@ typedef struct arc {
   struct arc *suivant_arc ; // arc suivant
 } arc_t, *parc_t ;
 
-typedef struct f{
+typedef struct file{
 	pnoeud_t elt;
 	struct file *suivant_file;
 } file, *debut_file;
@@ -227,12 +227,53 @@ int complet (pnoeud_t p) {
 }
 
 
+void ajouter_file(debut_file f, pnoeud_t p){
+	debut_file tmp;
+	tmp=malloc(sizeof(file));
+	tmp->elt=p;
+	tmp->suivant_file=f;
+	f=tmp;
+}
+
+void enlever_file(debut_file f, pnoeud_t p){
+	debut_file tmp,prec;
+	tmp=f;
+	prec=NULL;
+	while(tmp!=NULL && tmp->elt!=p){
+		tmp=tmp->suivant_file;
+		prec=tmp;
+	}
+	if(tmp!=NULL){
+		if(prec==NULL){
+			f=tmp->suivant_file;
+			free(tmp);
+		} else{
+		prec->suivant_file=tmp->suivant_file;
+		free(tmp);
+		}
+	}
+}
 
 void parcours_largeur(pnoeud_t p){
-	debut_file f;
-	f = malloc(sizeof(file));
-	f->elt=p;
+	debut_file f=NULL;
+	ajouter_file(f,p);
 	
+	while(f!=NULL){
+		pnoeud_t s;
+		s = f->elt;
+		enlever_file(f,s);
+		if(!(s->parcouru)){
+			s->parcouru=1;
+			printf("Noeud %d\n",s->etiquette_noeud);
+			parc_t t = s->liste_arcs;
+			while(t!=NULL){
+				pnoeud_t c = t->noeud_dest;
+				if(!(c->parcouru)){
+					ajouter_file(f,c);
+				}
+			}
+		}
+	}
 	// FIN
 }
 
@@ -247,6 +288,8 @@ int main (int argc, char **argv)
 	printf("Dégré du graphe : %d\n", degre_graphe(graphe));
 	printf("Indépendant ? %d\n", independant(graphe));
 	printf("Complet ? %d\n", complet(graphe));
+	
+	parcours_largeur(graphe);
 	
 	return 0;
 }
