@@ -18,7 +18,6 @@ typedef struct arc {
   struct arc *suivant_arc ; // arc suivant
 } arc_t, *parc_t ;
 
-int etiquetteArcs = 1;
 
 
 // Ajoute un arc dans un graphe, si l'arc n'existe pas déjà
@@ -38,7 +37,8 @@ int ajouter_arc(pnoeud_t graphe, pnoeud_t noeudParent, int etiqNoeudDirecteur) {
 	if(noeudPotentiel != NULL) { //On définit le noeud sur lequel pointe l'arc s'il existe
 		parc_t nv_arc = malloc(sizeof(parc_t)); //Allocation dynamique de la mémoire d'un nouvel arc
 		
-		nv_arc->etiquette_arc = etiquetteArcs++;
+		printf("Etiquette arc : ");
+		scanf("%d",&nv_arc->etiquette_arc);
 		nv_arc->noeud_dest = noeudPotentiel;
 		nv_arc->suivant_arc = noeudParent->liste_arcs;
 		noeudParent->liste_arcs = nv_arc;
@@ -61,13 +61,11 @@ pnoeud_t creer_graphe(){
 	printf("Bienvenue dans l'interface de création de graphe.\n Combien de noeuds souhaitez vous créer ? ");
 	scanf("%d",&nb_noeuds);
 	G = malloc(sizeof(noeud_t));
-	printf("Quelle est l'étiquette de votre noeud ? ");
-	scanf("%d",&G->etiquette_noeud);
+	G->etiquette_noeud=1;
 	P=G;
 	for (i = 1; i < nb_noeuds; i++){
 		C = malloc(sizeof(noeud_t));
-		printf("Quelle est l'étiquette de votre noeud ? ");
-		scanf("%d",&C->etiquette_noeud);
+		C->etiquette_noeud= i+1;
 		P->suivant_noeud = C;
 		P=C;
 	}
@@ -114,7 +112,7 @@ void affGraphe(pnoeud_t graphe) {
 		
 		parc_t tmpArcs = tmpNoeuds->liste_arcs;
 		while(tmpArcs != NULL) {
-			printf(" Arc %d (Noeud %d) -", tmpArcs->etiquette_arc, tmpArcs->noeud_dest->etiquette_noeud);
+			printf(" -(%d)-> %d | ", tmpArcs->etiquette_arc, tmpArcs->noeud_dest->etiquette_noeud);
 			tmpArcs = tmpArcs->suivant_arc;
 		}
 		
