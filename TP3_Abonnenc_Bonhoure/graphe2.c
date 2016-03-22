@@ -65,6 +65,7 @@ pnoeud_t creer_graphe(){
 		C = malloc(sizeof(noeud_t));
 		printf("Quelle est l'étiquette de votre noeud ? ");
 		scanf("%d",&C->etiquette_noeud);
+		C->parcouru = 0;
 		P->suivant_noeud = C;
 		P=C;
 	}
