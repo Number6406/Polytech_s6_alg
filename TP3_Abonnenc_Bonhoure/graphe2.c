@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <limits.h>
 
 
 typedef struct arc *parc_t ;
@@ -226,6 +227,9 @@ int complet (pnoeud_t p) {
   return 1;
 }
 
+int profondeur(pnoeud_t noeud) {
+	return 0;
+}
 
 void ajouter_file(debut_file f, pnoeud_t p){
 	debut_file tmp;
@@ -288,6 +292,7 @@ int main (int argc, char **argv)
 	printf("Dégré du graphe : %d\n", degre_graphe(graphe));
 	printf("Indépendant ? %d\n", independant(graphe));
 	printf("Complet ? %d\n", complet(graphe));
+	printf("Profondeur du graphe : %d\n", profondeur(graphe));
 	
 	parcours_largeur(graphe);
 	
