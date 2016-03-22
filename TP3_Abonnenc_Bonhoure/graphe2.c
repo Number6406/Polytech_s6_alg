@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <limits.h>
 
+#define NB_MAX_NOEUDS 20
 
 typedef struct arc *parc_t ;
 
@@ -67,9 +68,10 @@ pnoeud_t creer_graphe(){
 	G = malloc(sizeof(noeud_t));
 	G->etiquette_noeud=1;
 	P=G;
-	for (i = 1; i < nb_noeuds; i++){
+	for (i = 1; (i<NB_MAX_NOEUDS)&&i < nb_noeuds; i++){
 		C = malloc(sizeof(noeud_t));
 		C->etiquette_noeud= i+1;
+		C->parcouru=0;
 		P->suivant_noeud = C;
 		P=C;
 	}
@@ -259,20 +261,28 @@ void enlever_file(debut_file f, pnoeud_t p){
 }
 
 void parcours_largeur(pnoeud_t p){
+	int visite[NB_MAX_NOEUDS];
+	int nbn = nbNoeudGraphe(p);
+	int i;
 	debut_file f=NULL;
 	ajouter_file(f,p);
 	
+	for(i=0;i<nbn;i++){
+		visite[i]=0;
+	}
+	printf("debut\n");
 	while(f!=NULL){
+		printf("coucou\n");
 		pnoeud_t s;
 		s = f->elt;
 		enlever_file(f,s);
-		if(!(s->parcouru)){
-			s->parcouru=1;
+		if(!(visite[s->etiquette_noeud])){
+			visite[s->etiquette_noeud]=1;
 			printf("Noeud %d\n",s->etiquette_noeud);
 			parc_t t = s->liste_arcs;
 			while(t!=NULL){
 				pnoeud_t c = t->noeud_dest;
-				if(!(c->parcouru)){
+				if(!(visite[c->etiquette_noeud])){
 					ajouter_file(f,c);
 				}
 			}
