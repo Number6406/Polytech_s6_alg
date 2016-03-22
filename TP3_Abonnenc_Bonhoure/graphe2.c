@@ -18,7 +18,10 @@ typedef struct arc {
   struct arc *suivant_arc ; // arc suivant
 } arc_t, *parc_t ;
 
-
+typedef struct f{
+	pnoeud_t elt;
+	struct file *suivant_file;
+} file, *debut_file;
 
 // Ajoute un arc dans un graphe, si l'arc n'existe pas déjà
 int ajouter_arc(pnoeud_t graphe, pnoeud_t noeudParent, int etiqNoeudDirecteur) {
@@ -223,6 +226,15 @@ int complet (pnoeud_t p) {
   return 1;
 }
 
+
+
+void parcours_largeur(pnoeud_t p){
+	debut_file f;
+	f = malloc(sizeof(file));
+	f->elt=p;
+	
+	// FIN
+}
 
 
 int main (int argc, char **argv)
