@@ -20,6 +20,8 @@ typedef struct arc {
 
 int etiquetteArcs = 1;
 
+
+// Ajoute un arc dans un graphe, si l'arc n'existe pas déjà
 int ajouter_arc(pnoeud_t graphe, pnoeud_t noeudParent, int etiqNoeudDirecteur) {
 	
 	parc_t arcVerif = noeudParent->liste_arcs;
@@ -48,6 +50,7 @@ int ajouter_arc(pnoeud_t graphe, pnoeud_t noeudParent, int etiqNoeudDirecteur) {
 	
 }
 
+// Fonction interactive de création d'un graphe
 pnoeud_t creer_graphe(){
 	pnoeud_t G,P,C;
 	int nb_noeuds;
@@ -102,6 +105,7 @@ pnoeud_t creer_graphe(){
 	return G;
 }
 
+// Affichage d'un graphe
 void affGraphe(pnoeud_t graphe) {
 	
 	pnoeud_t tmpNoeuds = graphe;
@@ -120,6 +124,7 @@ void affGraphe(pnoeud_t graphe) {
 	
 }
 
+// Nombre d'arc dans une liste d'arc fournie en paramètre
 int nb_arc_list(parc_t l){
 	int nb = 0;
 	parc_t tmp = l;
@@ -130,6 +135,7 @@ int nb_arc_list(parc_t l){
 	return nb;
 }
 
+// Renvoie le nombre d'arc total du graphe
 int nombre_arcs (pnoeud_t p) {
 	int somme = 0;
 	pnoeud_t tmp = p;
@@ -138,9 +144,24 @@ int nombre_arcs (pnoeud_t p) {
 		tmp = tmp->suivant_noeud;
 		
 	}
-	return somme; // MDIFIIIIIIERRRRR
+	return somme;
 }
 
+
+// Nombre de noeuds dans un graphe
+int nbNoeudGraphe(pnoeud_t graphe) {
+	int nbNoeuds = 0;
+	
+	pnoeud_t noeudC = graphe;
+	while(noeudC != NULL) {
+	  nbNoeuds++;
+	  noeudC = noeudC->suivant_noeud;
+	}
+	
+	return nbNoeuds;
+}
+
+// Renvoie le degré d'un graphe
 int degre_graphe (pnoeud_t p) {
 	int deg = 0;
 	
@@ -157,39 +178,28 @@ int degre_graphe (pnoeud_t p) {
 	return deg;
 }
 
-
+// Renvoie une booléen (vrai) si le graphe est indépendant (tous ses noeuds)
 int independant (pnoeud_t p) {
   /* Les aretes du graphe n'ont pas de sommet en commun */
-  
 	pnoeud_t noeudC = p;
 	while(noeudC != NULL) {
-		
 		parc_t arcC = noeudC->liste_arcs;
+		int nbArcs = 0;
 		while(arcC != NULL) {
 			if(arcC->noeud_dest->parcouru) return 0; //Si ce noeud est déjà parcouru, le graphe n'est pas independant
 			arcC->noeud_dest->parcouru = 1;
 			
+			nbArcs += 1;
 			arcC = arcC->suivant_arc;
 		}
-		
+		if(nbArcs > 1) return 0;
 		noeudC = noeudC->suivant_noeud;
 	}
 	
 	return 1;
 }
 
-int nbNoeudGraphe(pnoeud_t graphe) {
-	int nbNoeuds = 0;
-	
-	pnoeud_t noeudC = graphe;
-	while(noeudC != NULL) {
-	  nbNoeuds++;
-	  noeudC = noeudC->suivant_noeud;
-	}
-	
-	return nbNoeuds;
-}
-
+// Renvoie vrai si le graphe est complet
 int complet (pnoeud_t p) {
   /* Toutes les paires de sommet du graphe sont jointes par un arc */
   
@@ -223,6 +233,7 @@ int main (int argc, char **argv)
 	affGraphe(graphe);
 	
 	printf("Nombre d'arcs : %d\n", nombre_arcs(graphe));
+	printf("Nombre de noeuds : %d\n", nbNoeudGraphe(graphe));
 	printf("Dégré du graphe : %d\n", degre_graphe(graphe));
 	printf("Indépendant ? %d\n", independant(graphe));
 	printf("Complet ? %d\n", complet(graphe));
