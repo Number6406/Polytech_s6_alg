@@ -22,6 +22,12 @@ int etiquetteArcs = 1;
 
 int ajouter_arc(pnoeud_t graphe, pnoeud_t noeudParent, int etiqNoeudDirecteur) {
 	
+	parc_t arcVerif = noeudParent->liste_arcs;
+	while(arcVerif != NULL) {
+		if(arcVerif->noeud_dest->etiquette_noeud == etiqNoeudDirecteur) {return 1;}
+		arcVerif = arcVerif->suivant_arc;
+	}
+	
 	pnoeud_t noeudPotentiel = graphe; //On parcours le graphe pour trouver le noeud en question
 	while(noeudPotentiel != NULL && noeudPotentiel->etiquette_noeud != etiqNoeudDirecteur){
 		noeudPotentiel = noeudPotentiel->suivant_noeud;
@@ -37,7 +43,7 @@ int ajouter_arc(pnoeud_t graphe, pnoeud_t noeudParent, int etiqNoeudDirecteur) {
 		
 		return 0;
 	} else {
-		return 1;
+		return 2;
 	}
 	
 }
@@ -46,6 +52,8 @@ pnoeud_t creer_graphe(){
 	pnoeud_t G,P,C;
 	int nb_noeuds;
 	unsigned int i;
+	int erreur;
+	int nbArcs;
 	
 	printf("Bienvenue dans l'interface de création de graphe.\n Combien de noeuds souhaitez vous créer ? ");
 	scanf("%d",&nb_noeuds);
@@ -64,6 +72,7 @@ pnoeud_t creer_graphe(){
 	P = G;
 	char rep;
 	while(P!=NULL){
+		nbArcs = 0;
 		printf("Noeud %d : A t'il des arcs ? o/n ",P->etiquette_noeud);
 		scanf(" %c",&rep);
 		while(rep == 'o' || rep == 'O'){
@@ -71,13 +80,19 @@ pnoeud_t creer_graphe(){
 			printf("Vers quel noeud va t'il ? ");
 			scanf("%d",&etiq);
 			
-			if(ajouter_arc(G,P,etiq) == 1) {
+			if((erreur = ajouter_arc(G,P,etiq))) {
 				//erreur d'ajout
-				printf("L'étiquette spécifiée n'existe pas. Rien n'a été créé.\n");
+				if(erreur == 1) {
+					printf("Cet arc est déjà présent pour ce noeud.\n");
+				} else {printf("L'étiquette spécifiée n'existe pas. Rien n'a été créé.\n");}
+			} else {
+				nbArcs++;
 			}
 			
-			printf("Un autre arc ? o/n ");
-			scanf(" %c",&rep);
+			if(nbArcs < nb_noeuds) {
+				printf("Un autre arc ? o/n ");
+				scanf(" %c",&rep);
+			} else { rep = 'n'; }
 		}
 		P = P->suivant_noeud;
 	}
@@ -163,20 +178,25 @@ int independant (pnoeud_t p) {
 	return 1;
 }
 
+int nbNoeudGraphe(pnoeud_t graphe) {
+	int nbNoeuds = 0;
+	
+	pnoeud_t noeudC = graphe;
+	while(noeudC != NULL) {
+	  nbNoeuds++;
+	  noeudC = noeudC->suivant_noeud;
+	}
+	
+	return nbNoeuds;
+}
 
 int complet (pnoeud_t p) {
   /* Toutes les paires de sommet du graphe sont jointes par un arc */
   
-  int nbNoeuds = 0;
+  int nbNoeuds = nbNoeudGraphe(p);
   int nbArcs;
   
   pnoeud_t noeudC = p;
-  while(noeudC != NULL) {
-	  nbNoeuds++;
-	  noeudC = noeudC->suivant_noeud;
-  }
-  
-  noeudC = p;
   while(noeudC != NULL) {
 	
 	parc_t arcC = noeudC->liste_arcs;
@@ -202,6 +222,10 @@ int main (int argc, char **argv)
 	pnoeud_t graphe = creer_graphe();
 	affGraphe(graphe);
 	
+	printf("Nombre d'arcs : %d\n", nombre_arcs(graphe));
+	printf("Dégré du graphe : %d\n", degre_graphe(graphe));
+	printf("Indépendant ? %d\n", independant(graphe));
+	printf("Complet ? %d\n", complet(graphe));
 	
 	return 0;
 }
