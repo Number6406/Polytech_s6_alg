@@ -287,15 +287,6 @@ debut_file ajout_queue(debut_file f, pnoeud_t p){
 	}
 }
 
-//void aff_file(debut_file f){
-	//debut_file tmp = f;
-	//while(tmp!=NULL){
-		//printf("%d | ",tmp->elt);
-		//tmp=tmp->suivant_file;
-	//}
-	//printf("\n");
-}
-
 // Vérifie si un élément appartient à la file
 int appartient_file(debut_file f, pnoeud_t p){
 	debut_file tmp = f;
@@ -316,7 +307,6 @@ debut_file ajouter_file(debut_file f, pnoeud_t p){
 	}
 	return f;
 }
-
 
 // Enlever l'élément donné en argument de la file
 debut_file enlever_file(debut_file f, pnoeud_t p){
@@ -339,12 +329,14 @@ debut_file enlever_file(debut_file f, pnoeud_t p){
 	return f;
 }
 
+// Parcours en largeur d'un graphe
 void parcours_largeur(pnoeud_t p){
 	int visite[NB_MAX_NOEUDS];
 	int nbn = nbNoeudGraphe(p);
 	int i;
 	debut_file f=NULL;
-	f = ajouter_file(f,p);
+	pnoeud_t en_cours = p;
+	f = ajout_queue(f,p);
 	
 	for(i=1;i<=nbn;i++){
 		visite[i]=0;
@@ -361,9 +353,15 @@ void parcours_largeur(pnoeud_t p){
 			while(t!=NULL){
 				pnoeud_t c = t->noeud_dest;
 				if(!(visite[c->etiquette_noeud])){
-					f = ajouter_file(f,c);
+					f = ajout_queue(f,c);
 				}
 				t = t->suivant_arc;
+			}
+		}
+		if(f==NULL){
+			while(en_cours!=NULL){
+				f = ajout_queue(f,en_cours);
+				en_cours = en_cours->suivant_noeud;
 			}
 		}
 	}
