@@ -26,6 +26,25 @@ typedef struct file{
 	struct file *prec_file;
 } file, *debut_file;
 
+// Affichage d'un graphe
+void affGraphe(pnoeud_t graphe) {
+	
+	pnoeud_t tmpNoeuds = graphe;
+	while(tmpNoeuds != NULL) {
+		printf("Noeud %d [%d]|", tmpNoeuds->etiquette_noeud, tmpNoeuds->parcouru);
+		
+		parc_t tmpArcs = tmpNoeuds->liste_arcs;
+		while(tmpArcs != NULL) {
+			printf(" -(%d)-> %d | ", tmpArcs->etiquette_arc, tmpArcs->noeud_dest->etiquette_noeud);
+			tmpArcs = tmpArcs->suivant_arc;
+		}
+		
+		printf("\n");
+		tmpNoeuds = tmpNoeuds->suivant_noeud;
+	}
+	
+}
+
 // Ajoute un arc dans un graphe, si l'arc n'existe pas déjà
 int ajouter_arc(pnoeud_t graphe, pnoeud_t noeudParent, int etiqNoeudDirecteur) {
 	
@@ -117,7 +136,7 @@ void libererGraphe(pnoeud_t graphe) {
 
 }
 
-void generationNoeuds(pnoeud_t graphe, int nbNoeuds) {
+pnoeud_t generationNoeuds(pnoeud_t graphe, int nbNoeuds) {
 	if(graphe != NULL) { libererGraphe(graphe); }
 	
 	//initialisation du graphe avec le premier arc
@@ -136,19 +155,24 @@ void generationNoeuds(pnoeud_t graphe, int nbNoeuds) {
 		noeudCourr->liste_arcs = NULL;
 		graphe->suivant_noeud = noeudCourr;
 	}
+	
+	return graphe;
 }
 
 int lire_graphe(pnoeud_t graphe, char *nomFich) {
-	int n,a;
+	int n, a;
 	FILE *fichier = fopen(nomFich, "r");
 	int nbNoeuds, nbArcs;
 	int noeudDest, etiqArc;
 	
+	if(fichier==NULL) { fprintf(stderr, "Le fichier n'existe pas."); return 1; }
 	//Lit le nombre de noeuds du graphe et les créé en conséquence
 	fscanf(fichier, "%d", &nbNoeuds);
-	if(nbNoeuds == 0) { printf("Erreur : pas de noeuds\n"); return 1; }
-	generationNoeuds(graphe, nbNoeuds);
 	
+	if(nbNoeuds == 0) { printf("Erreur : pas de noeuds\n"); return 1; }
+	graphe = generationNoeuds(graphe, nbNoeuds);
+	
+	affGraphe(graphe);
 
 	//Création des arcs de chaque noeud
 	pnoeud_t noeudCourr = graphe; //Noeud courrant permettant la création des arcs
@@ -159,19 +183,22 @@ int lire_graphe(pnoeud_t graphe, char *nomFich) {
 		for(a=0; a<nbArcs; a++) {
 		
 			fscanf(fichier, "%d\[%d]", &noeudDest, &etiqArc); //lecture d'un format d'arc
-				
+			
 			pnoeud_t noeudPotentiel = graphe; //On parcours le graphe pour trouver le noeud en question
 			while(noeudPotentiel != NULL && noeudPotentiel->etiquette_noeud != noeudDest){
 				noeudPotentiel = noeudPotentiel->suivant_noeud;
 			}
 			
 			parc_t arcVerif = noeudCourr->liste_arcs; // Vérification de l'existence de l'arc dans la liste
+			
+			printf("Je passe ici !\n");
 			while(arcVerif != NULL) {
-				if(arcVerif->noeud_dest->etiquette_noeud == noeudDest) {printf("Arc déjà présent\n"); return 1;}
+				if(arcVerif->noeud_dest->etiquette_noeud == noeudDest) { fprintf(stderr, "Arc déjà présent\n"); return 1;}
 				arcVerif = arcVerif->suivant_arc;
 			}
+			
 			//Si le noeud vers lequel est censé pointer l'arc n'existe pas, retourne une erreur
-			if(noeudPotentiel == NULL) { printf("Le noeud n'existe pas.\n"); return 1; } 
+			if(noeudPotentiel == NULL) { fprintf(stderr, "Le noeud n'existe pas.\n"); return 1; } 
 			// création de l'arc dans la liste s'il n'est pas présent
 			parc_t arcCourr = malloc(sizeof(parc_t));
 			arcCourr->etiquette_arc = etiqArc;
@@ -184,25 +211,6 @@ int lire_graphe(pnoeud_t graphe, char *nomFich) {
 	}
 	
 	return 0;
-}
-
-// Affichage d'un graphe
-void affGraphe(pnoeud_t graphe) {
-	
-	pnoeud_t tmpNoeuds = graphe;
-	while(tmpNoeuds != NULL) {
-		printf("Noeud %d [%d]|", tmpNoeuds->etiquette_noeud, tmpNoeuds->parcouru);
-		
-		parc_t tmpArcs = tmpNoeuds->liste_arcs;
-		while(tmpArcs != NULL) {
-			printf(" -(%d)-> %d | ", tmpArcs->etiquette_arc, tmpArcs->noeud_dest->etiquette_noeud);
-			tmpArcs = tmpArcs->suivant_arc;
-		}
-		
-		printf("\n");
-		tmpNoeuds = tmpNoeuds->suivant_noeud;
-	}
-	
 }
 
 // Nombre d'arc dans une liste d'arc fournie en paramètre
@@ -442,8 +450,10 @@ int main (int argc, char **argv)
 {
 	pnoeud_t graphe = NULL;
 	//graphe = creer_graphe();
+
 	if(argc < 2) { printf("erreur de lecture : pas de nom indiqué"); return 1; }
-	lire_graphe(graphe, argv[2]);
+	lire_graphe(graphe, argv[1]);
+	
 	affGraphe(graphe);
 	
 	
