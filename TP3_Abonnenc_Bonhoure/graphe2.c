@@ -230,7 +230,7 @@ int complet (pnoeud_t p) {
   return 1;
 }
 
-
+// Remet à zéro le champ parcouru du graphe
 void deparcourir(pnoeud_t graphe) {
 	pnoeud_t noeudCourr = graphe;
 	while(noeudCourr != NULL) {
@@ -239,24 +239,29 @@ void deparcourir(pnoeud_t graphe) {
 	}
 }
 
+// Parcours en profondeur
 int profondeur(pnoeud_t graphe) {
 	deparcourir(graphe);
-	pnoeud_t noeudCourr = graphe;
-	
-	while(noeudCourr != NULL) {
-		if(noeudCourr->parcouru == 0) {
-			noeudCourr->parcouru = 1;
-			printf("%d ", noeudCourr->etiquette_noeud);
-			
-			parc_t arcCourr = noeudCourr->liste_arcs;
-			while(arcCourr != NULL) {
-				profondeur(arcCourr->noeud_dest);
+	printf("Parcours en profondeur \n");
+	void aux(pnoeud_t graphe){
+		pnoeud_t noeudCourr = graphe;
+		
+		while(noeudCourr != NULL) {
+			if(noeudCourr->parcouru == 0) {
+				noeudCourr->parcouru = 1;
+				printf("%d ", noeudCourr->etiquette_noeud);
 				
-				arcCourr = arcCourr->suivant_arc;
-			}	
+				parc_t arcCourr = noeudCourr->liste_arcs;
+				while(arcCourr != NULL) {
+					aux(arcCourr->noeud_dest);
+					
+					arcCourr = arcCourr->suivant_arc;
+				}	
+			}
+			noeudCourr = noeudCourr->suivant_noeud;
 		}
-		noeudCourr = noeudCourr->suivant_noeud;
 	}
+	aux(graphe);
 	
 	return 0;
 }
@@ -294,18 +299,6 @@ int appartient_file(debut_file f, pnoeud_t p){
 		tmp = tmp->suivant_file;
 	}
 	return tmp!=NULL;
-}
-
-// Ajoute tout les noeuds de p dans la file (est-ce bon ?)
-debut_file ajouter_file(debut_file f, pnoeud_t p){
-	pnoeud_t tmp = p;
-	while(tmp!=NULL){
-		if(!(appartient_file(f,tmp))){
-			f = ajout_queue(f,tmp);
-		}
-		tmp = tmp->suivant_noeud;
-	}
-	return f;
 }
 
 // Enlever l'élément donné en argument de la file
@@ -426,8 +419,8 @@ int main (int argc, char **argv)
 	pnoeud_t graphe = creer_graphe();
 	//affGraphe(graphe);
 	
-	if(argc < 2) { printf("erreur de lecture : pas de nom indiqué"); return 1; }
-	lire_graphe(graphe, argv[2]);
+	//if(argc < 2) { printf("erreur de lecture : pas de nom indiqué"); return 1; }
+	//lire_graphe(graphe, argv[2]);
 	affGraphe(graphe);
 	
 	printf("Nombre d'arcs : %d\n", nombre_arcs(graphe));
@@ -439,7 +432,7 @@ int main (int argc, char **argv)
 	affGraphe(graphe);
 	
 	parcours_largeur(graphe);
-	//profondeur(graphe);
+	profondeur(graphe);
 	
 	
 	return 0;
