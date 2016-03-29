@@ -114,7 +114,7 @@ void affGraphe(pnoeud_t graphe) {
 	
 	pnoeud_t tmpNoeuds = graphe;
 	while(tmpNoeuds != NULL) {
-		printf("Noeud %d |", tmpNoeuds->etiquette_noeud);
+		printf("Noeud %d [%d]|", tmpNoeuds->etiquette_noeud, tmpNoeuds->parcouru);
 		
 		parc_t tmpArcs = tmpNoeuds->liste_arcs;
 		while(tmpArcs != NULL) {
@@ -229,7 +229,33 @@ int complet (pnoeud_t p) {
   return 1;
 }
 
-int profondeur(pnoeud_t noeud) {
+void deparcourir(pnoeud_t graphe) {
+	pnoeud_t noeudCourr = graphe;
+	while(noeudCourr != NULL) {
+		noeudCourr->parcouru = 0;
+		noeudCourr = noeudCourr->suivant_noeud;
+	}
+}
+
+int profondeur(pnoeud_t graphe) {
+	deparcourir(graphe);
+	pnoeud_t noeudCourr = graphe;
+	
+	while(noeudCourr != NULL) {
+		if(noeudCourr->parcouru == 0) {
+			noeudCourr->parcouru = 1;
+			printf("%d ", noeudCourr->etiquette_noeud);
+			
+			parc_t arcCourr = noeudCourr->liste_arcs;
+			while(arcCourr != NULL) {
+				profondeur(arcCourr->noeud_dest);
+				
+				arcCourr = arcCourr->suivant_arc;
+			}	
+		}
+		noeudCourr = noeudCourr->suivant_noeud;
+	}
+	
 	return 0;
 }
 
@@ -322,9 +348,11 @@ int main (int argc, char **argv)
 	printf("Dégré du graphe : %d\n", degre_graphe(graphe));
 	printf("Indépendant ? %d\n", independant(graphe));
 	printf("Complet ? %d\n", complet(graphe));
-	printf("Profondeur du graphe : %d\n", profondeur(graphe));
 	
-	parcours_largeur(graphe);
+	affGraphe(graphe);
+	
+	//parcours_largeur(graphe);
+	profondeur(graphe);
 	
 	return 0;
 }
