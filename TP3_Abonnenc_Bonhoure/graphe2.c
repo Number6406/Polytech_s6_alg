@@ -109,6 +109,82 @@ pnoeud_t creer_graphe(){
 	return G;
 }
 
+void libererGraphe(pnoeud_t graphe) {
+	
+	//TODO 
+	graphe = NULL;
+
+}
+
+void generationNoeuds(pnoeud_t graphe, int nbNoeuds) {
+	if(graphe != NULL) { libererGraphe(graphe); }
+	
+	//initialisation du graphe avec le premier arc
+	graphe = malloc(sizeof(noeud_t));
+	graphe->etiquette_noeud = 1;
+	graphe->suivant_noeud = NULL;
+	graphe->liste_arcs = NULL;
+	
+	int i;
+	// création de tous les noeuds successeurs du graphe
+	for (i=nbNoeuds; i>1; i--) {
+		pnoeud_t noeudCourr = malloc(sizeof(noeud_t));
+		noeudCourr->etiquette_noeud= i;
+		noeudCourr->suivant_noeud = graphe->suivant_noeud;
+		noeudCourr->parcouru = 0;
+		noeudCourr->liste_arcs = NULL;
+		graphe->suivant_noeud = noeudCourr;
+	}
+}
+
+int lire_graphe(pnoeud_t graphe, char *nomFich) {
+	int n,a;
+	FILE *fichier = fopen(nomFich, "r");
+	int nbNoeuds, nbArcs;
+	int noeudDest, etiqArc;
+	
+	//Lit le nombre de noeuds du graphe et les créé en conséquence
+	fscanf(fichier, "%d", &nbNoeuds);
+	if(nbNoeuds == 0) { printf("Erreur : pas de noeuds\n"); return 1; }
+	generationNoeuds(graphe, nbNoeuds);
+	
+
+	//Création des arcs de chaque noeud
+	pnoeud_t noeudCourr = graphe; //Noeud courrant permettant la création des arcs
+	for(n=0; n<nbNoeuds; n++) {
+		
+		fscanf(fichier, "%d", &nbArcs);
+		
+		for(a=0; a<nbArcs; a++) {
+		
+			fscanf(fichier, "%d\[%d]", &noeudDest, &etiqArc); //lecture d'un format d'arc
+				
+			pnoeud_t noeudPotentiel = graphe; //On parcours le graphe pour trouver le noeud en question
+			while(noeudPotentiel != NULL && noeudPotentiel->etiquette_noeud != noeudDest){
+				noeudPotentiel = noeudPotentiel->suivant_noeud;
+			}
+			
+			parc_t arcVerif = noeudCourr->liste_arcs; // Vérification de l'existence de l'arc dans la liste
+			while(arcVerif != NULL) {
+				if(arcVerif->noeud_dest->etiquette_noeud == noeudDest) {printf("Arc déjà présent\n"); return 1;}
+				arcVerif = arcVerif->suivant_arc;
+			}
+			//Si le noeud vers lequel est censé pointer l'arc n'existe pas, retourne une erreur
+			if(noeudPotentiel == NULL) { printf("Le noeud n'existe pas.\n"); return 1; } 
+			// création de l'arc dans la liste s'il n'est pas présent
+			parc_t arcCourr = malloc(sizeof(parc_t));
+			arcCourr->etiquette_arc = etiqArc;
+			arcCourr->suivant_arc = noeudCourr->liste_arcs;
+			noeudCourr->liste_arcs = arcCourr;
+			
+		}
+		noeudCourr = noeudCourr->suivant_noeud; //Passage au noeud suivant
+		
+	}
+	
+	return 0;
+}
+
 // Affichage d'un graphe
 void affGraphe(pnoeud_t graphe) {
 	
@@ -359,66 +435,14 @@ void parcours_largeur(pnoeud_t p){
 	// FIN
 }
 
-//int lire_graphe(pnoeud_t graphe, char *nomFich) {
-	
-	//FILE *fichier = fopen(nomFich, "r");
-	
-	//int nbNoeuds;
-	//fscanf(fichier, "%d\n", &nbNoeuds);
-	
-	//if(nbNoeuds == 0) { printf("Erreur : pas de noeuds\n"); return 1; }
-	
-	//graphe = malloc(sizeof(noeud_t));
-	//graphe->etiquette_noeud = 1;
-	//graphe->suivant_noeud = NULL;
-	//graphe->liste_arcs = NULL;
-	
-	//int i;
-	//for (i=nbNoeuds; i>1; i--) {
-		//pnoeud_t noeudCourr = malloc(sizeof(noeud_t));
-		//noeudCourr->etiquette_noeud= i;
-		//noeudCourr->suivant_noeud = graphe->suivant_noeud;
-		//noeudCourr->parcouru = 0;
-		//noeudCourr->liste_arcs = NULL;
-		//graphe->suivant_noeud = noeudCourr;
-	//}
-	
-	//int noeudDest, etiqArc;
-	//pnoeud_t noeudCourr = graphe;
-	
-	//do {
-		//fscanf(fichier, "%d\[%d]", &noeudDest, &etiqArc);
-		
-		//pnoeud_t noeudPotentiel = graphe; //On parcours le graphe pour trouver le noeud en question
-		//while(noeudPotentiel != NULL && noeudPotentiel->etiquette_noeud != noeudDest){
-			//noeudPotentiel = noeudPotentiel->suivant_noeud;
-		//}
-		
-		//parc_t arcVerif = noeudCourr->liste_arcs;
-		//while(arcVerif != NULL) {
-			//if(arcVerif->noeud_dest->etiquette_noeud == etiqNoeudDirecteur) {printf("Arc déjà présent\n"); return 1;}
-			//arcVerif = arcVerif->suivant_arc;
-		//}
-		
-		//parc_t arcCourr = malloc(sizeof(parc_t));
-		//arcCourr->suivant_arc = graphe->liste_arcs;
-		//noeudCourr->liste_arcs = arcCourr;
-		//arcCourr->etiquette_arc = etiqArc;
-		
-	//} while();
-	
-	//return 0;
-//}
-
-
 int main (int argc, char **argv)
 {
-	pnoeud_t graphe = creer_graphe();
-	//affGraphe(graphe);
-	
-	//if(argc < 2) { printf("erreur de lecture : pas de nom indiqué"); return 1; }
-	//lire_graphe(graphe, argv[2]);
+	pnoeud_t graphe = NULL;
+	//graphe = creer_graphe();
+	if(argc < 2) { printf("erreur de lecture : pas de nom indiqué"); return 1; }
+	lire_graphe(graphe, argv[2]);
 	affGraphe(graphe);
+	
 	
 	printf("Nombre d'arcs : %d\n", nombre_arcs(graphe));
 	printf("Nombre de noeuds : %d\n", nbNoeudGraphe(graphe));
