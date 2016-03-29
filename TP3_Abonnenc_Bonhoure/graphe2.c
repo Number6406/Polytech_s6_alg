@@ -10,9 +10,8 @@ typedef struct n {
   int        etiquette_noeud ; // etiquette du noeud
   parc_t     liste_arcs ; // arcs sortants du noeud
   struct n   *suivant_noeud ; // noeud suivant
-  int		 parcouru; // vérifier sur le noeud est atteint par un arc
+  int		 parcouru; // vérifier sur le noeud a été parcouru lors d'un traitement
 } noeud_t, *pnoeud_t ;
-
 
 typedef struct arc {
   int         etiquette_arc ; // etiquette de l arc
@@ -408,35 +407,33 @@ debut_file enlever_file(debut_file f, pnoeud_t p){
 
 // Parcours en largeur d'un graphe
 void parcours_largeur(pnoeud_t p){
-	int visite[NB_MAX_NOEUDS];
-	int nbn = nbNoeudGraphe(p);
-	int i;
-	debut_file f=NULL;
+	debut_file f = NULL;
 	pnoeud_t en_cours = p;
+	
+	printf("Parcours en largeur\n");
+	deparcourir(p);
 	f = ajout_queue(f,p);
 	
-	for(i=1;i<=nbn;i++){
-		visite[i]=0;
-	}
-	printf("debut\n");
 	while(f!=NULL){
+		
 		pnoeud_t s;
-		s = f->elt;
+		s = f -> elt;
 		f = enlever_file(f,s);
-		if(!(visite[s->etiquette_noeud])){
-			visite[s->etiquette_noeud]=1;
+		if(!(s->parcouru)){
+			s->parcouru=1;
 			printf("| %d ",s->etiquette_noeud);
+			
 			parc_t t = s->liste_arcs;
 			while(t!=NULL){
 				pnoeud_t c = t->noeud_dest;
-				if(!(visite[c->etiquette_noeud])){
+				if(!(c->parcouru)){
 					f = ajout_queue(f,c);
 				}
 				t = t->suivant_arc;
 			}
 		}
 		if(f==NULL){
-			while(en_cours!=NULL){
+			if(en_cours!=NULL){
 				f = ajout_queue(f,en_cours);
 				en_cours = en_cours->suivant_noeud;
 			}
@@ -465,7 +462,7 @@ int main (int argc, char **argv)
 	
 	affGraphe(graphe);
 	
-	parcours_largeur(graphe);
+	//parcours_largeur(graphe);
 	profondeur(graphe);
 	
 	
