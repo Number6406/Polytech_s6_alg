@@ -233,21 +233,36 @@ int profondeur(pnoeud_t noeud) {
 	return 0;
 }
 
-void ajouter_file(debut_file f, pnoeud_t p){
-	debut_file tmp;
+
+debut_file ajout_queue(debut_file f, pnoeud_t p){
+	debut_file tmp = f;
+	while(tmp!=NULL){
+		tmp = tmp->suivant_file;
+	}
 	tmp=malloc(sizeof(file));
-	tmp->elt=p;
-	tmp->suivant_file=f;
-	f=tmp;
+	tmp->elt = p;
+	if(f==NULL){ f = tmp;}
+	return f;
 }
 
-void enlever_file(debut_file f, pnoeud_t p){
+// Ajoute tout les noeuds de p dans la file
+debut_file ajouter_file(debut_file f, pnoeud_t p){
+	pnoeud_t tmp = p;
+	while(tmp!=NULL){
+		printf("ajouuut\n");
+		f = ajout_queue(f,tmp);
+		tmp = tmp->suivant_noeud;
+	}
+	return f;
+}
+
+debut_file enlever_file(debut_file f, pnoeud_t p){
 	debut_file tmp,prec;
 	tmp=f;
 	prec=NULL;
 	while(tmp!=NULL && tmp->elt!=p){
-		tmp=tmp->suivant_file;
 		prec=tmp;
+		tmp=tmp->suivant_file;
 	}
 	if(tmp!=NULL){
 		if(prec==NULL){
@@ -258,6 +273,7 @@ void enlever_file(debut_file f, pnoeud_t p){
 		free(tmp);
 		}
 	}
+	return f;
 }
 
 void parcours_largeur(pnoeud_t p){
@@ -265,9 +281,9 @@ void parcours_largeur(pnoeud_t p){
 	int nbn = nbNoeudGraphe(p);
 	int i;
 	debut_file f=NULL;
-	ajouter_file(f,p);
+	f = ajouter_file(f,p);
 	
-	for(i=0;i<nbn;i++){
+	for(i=1;i<=nbn;i++){
 		visite[i]=0;
 	}
 	printf("debut\n");
@@ -275,7 +291,9 @@ void parcours_largeur(pnoeud_t p){
 		printf("coucou\n");
 		pnoeud_t s;
 		s = f->elt;
-		enlever_file(f,s);
+		printf("f avant : %d ",f);
+		f = enlever_file(f,s);
+		printf("f:%d\n",f);
 		if(!(visite[s->etiquette_noeud])){
 			visite[s->etiquette_noeud]=1;
 			printf("Noeud %d\n",s->etiquette_noeud);
@@ -283,11 +301,13 @@ void parcours_largeur(pnoeud_t p){
 			while(t!=NULL){
 				pnoeud_t c = t->noeud_dest;
 				if(!(visite[c->etiquette_noeud])){
-					ajouter_file(f,c);
+					f = ajouter_file(f,c);
 				}
+				t = t->suivant_arc;
 			}
 		}
 	}
+	printf("fin\n");
 	// FIN
 }
 
