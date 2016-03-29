@@ -10,9 +10,8 @@ typedef struct n {
   int        etiquette_noeud ; // etiquette du noeud
   parc_t     liste_arcs ; // arcs sortants du noeud
   struct n   *suivant_noeud ; // noeud suivant
-  int		 parcouru; // vérifier sur le noeud est atteint par un arc
+  int		 parcouru; // vérifier sur le noeud a été parcouru lors d'un traitement
 } noeud_t, *pnoeud_t ;
-
 
 typedef struct arc {
   int         etiquette_arc ; // etiquette de l arc
@@ -324,35 +323,33 @@ debut_file enlever_file(debut_file f, pnoeud_t p){
 
 // Parcours en largeur d'un graphe
 void parcours_largeur(pnoeud_t p){
-	int visite[NB_MAX_NOEUDS];
-	int nbn = nbNoeudGraphe(p);
-	int i;
-	debut_file f=NULL;
+	debut_file f = NULL;
 	pnoeud_t en_cours = p;
+	
+	printf("Parcours en largeur\n");
+	deparcourir(p);
 	f = ajout_queue(f,p);
 	
-	for(i=1;i<=nbn;i++){
-		visite[i]=0;
-	}
-	printf("debut\n");
 	while(f!=NULL){
+		
 		pnoeud_t s;
-		s = f->elt;
+		s = f -> elt;
 		f = enlever_file(f,s);
-		if(!(visite[s->etiquette_noeud])){
-			visite[s->etiquette_noeud]=1;
+		if(!(s->parcouru)){
+			s->parcouru=1;
 			printf("| %d ",s->etiquette_noeud);
+			
 			parc_t t = s->liste_arcs;
 			while(t!=NULL){
 				pnoeud_t c = t->noeud_dest;
-				if(!(visite[c->etiquette_noeud])){
+				if(!(c->parcouru)){
 					f = ajout_queue(f,c);
 				}
 				t = t->suivant_arc;
 			}
 		}
 		if(f==NULL){
-			while(en_cours!=NULL){
+			if(en_cours!=NULL){
 				f = ajout_queue(f,en_cours);
 				en_cours = en_cours->suivant_noeud;
 			}
@@ -362,56 +359,56 @@ void parcours_largeur(pnoeud_t p){
 	// FIN
 }
 
-int lire_graphe(pnoeud_t graphe, char *nomFich) {
+//int lire_graphe(pnoeud_t graphe, char *nomFich) {
 	
-	FILE *fichier = fopen(nomFich, "r");
+	//FILE *fichier = fopen(nomFich, "r");
 	
-	int nbNoeuds;
-	fscanf(fichier, "%d\n", &nbNoeuds);
+	//int nbNoeuds;
+	//fscanf(fichier, "%d\n", &nbNoeuds);
 	
-	if(nbNoeuds == 0) { printf("Erreur : pas de noeuds\n"); return 1; }
+	//if(nbNoeuds == 0) { printf("Erreur : pas de noeuds\n"); return 1; }
 	
-	graphe = malloc(sizeof(noeud_t));
-	graphe->etiquette_noeud = 1;
-	graphe->suivant_noeud = NULL;
-	graphe->liste_arcs = NULL;
+	//graphe = malloc(sizeof(noeud_t));
+	//graphe->etiquette_noeud = 1;
+	//graphe->suivant_noeud = NULL;
+	//graphe->liste_arcs = NULL;
 	
-	int i;
-	for (i=nbNoeuds; i>1; i--) {
-		pnoeud_t noeudCourr = malloc(sizeof(noeud_t));
-		noeudCourr->etiquette_noeud= i;
-		noeudCourr->suivant_noeud = graphe->suivant_noeud;
-		noeudCourr->parcouru = 0;
-		noeudCourr->liste_arcs = NULL;
-		graphe->suivant_noeud = noeudCourr;
-	}
+	//int i;
+	//for (i=nbNoeuds; i>1; i--) {
+		//pnoeud_t noeudCourr = malloc(sizeof(noeud_t));
+		//noeudCourr->etiquette_noeud= i;
+		//noeudCourr->suivant_noeud = graphe->suivant_noeud;
+		//noeudCourr->parcouru = 0;
+		//noeudCourr->liste_arcs = NULL;
+		//graphe->suivant_noeud = noeudCourr;
+	//}
 	
-	int noeudDest, etiqArc;
-	pnoeud_t noeudCourr = graphe;
+	//int noeudDest, etiqArc;
+	//pnoeud_t noeudCourr = graphe;
 	
-	do {
-		fscanf(fichier, "%d\[%d]", &noeudDest, &etiqArc);
+	//do {
+		//fscanf(fichier, "%d\[%d]", &noeudDest, &etiqArc);
 		
-		pnoeud_t noeudPotentiel = graphe; //On parcours le graphe pour trouver le noeud en question
-		while(noeudPotentiel != NULL && noeudPotentiel->etiquette_noeud != noeudDest){
-			noeudPotentiel = noeudPotentiel->suivant_noeud;
-		}
+		//pnoeud_t noeudPotentiel = graphe; //On parcours le graphe pour trouver le noeud en question
+		//while(noeudPotentiel != NULL && noeudPotentiel->etiquette_noeud != noeudDest){
+			//noeudPotentiel = noeudPotentiel->suivant_noeud;
+		//}
 		
-		parc_t arcVerif = noeudCourr->liste_arcs;
-		while(arcVerif != NULL) {
-			if(arcVerif->noeud_dest->etiquette_noeud == etiqNoeudDirecteur) {printf("Arc déjà présent\n"); return 1;}
-			arcVerif = arcVerif->suivant_arc;
-		}
+		//parc_t arcVerif = noeudCourr->liste_arcs;
+		//while(arcVerif != NULL) {
+			//if(arcVerif->noeud_dest->etiquette_noeud == etiqNoeudDirecteur) {printf("Arc déjà présent\n"); return 1;}
+			//arcVerif = arcVerif->suivant_arc;
+		//}
 		
-		parc_t arcCourr = malloc(sizeof(parc_t));
-		arcCourr->suivant_arc = graphe->liste_arcs;
-		noeudCourr->liste_arcs = arcCourr;
-		arcCourr->etiquette_arc = etiqArc;
+		//parc_t arcCourr = malloc(sizeof(parc_t));
+		//arcCourr->suivant_arc = graphe->liste_arcs;
+		//noeudCourr->liste_arcs = arcCourr;
+		//arcCourr->etiquette_arc = etiqArc;
 		
-	} while();
+	//} while();
 	
-	return 0;
-}
+	//return 0;
+//}
 
 
 int main (int argc, char **argv)
@@ -431,7 +428,7 @@ int main (int argc, char **argv)
 	
 	affGraphe(graphe);
 	
-	parcours_largeur(graphe);
+	//parcours_largeur(graphe);
 	profondeur(graphe);
 	
 	
