@@ -23,6 +23,7 @@ typedef struct arc {
 typedef struct file{
 	pnoeud_t elt;
 	struct file *suivant_file;
+	struct file *prec_file;
 } file, *debut_file;
 
 // Ajoute un arc dans un graphe, si l'arc n'existe pas déjà
@@ -229,6 +230,7 @@ int complet (pnoeud_t p) {
   return 1;
 }
 
+
 void deparcourir(pnoeud_t graphe) {
 	pnoeud_t noeudCourr = graphe;
 	while(noeudCourr != NULL) {
@@ -260,28 +262,63 @@ int profondeur(pnoeud_t graphe) {
 }
 
 
+// Structure de file utile au parcours en largeur
+// First In First Out
+// Ajouter un noeud en queue de file
 debut_file ajout_queue(debut_file f, pnoeud_t p){
-	debut_file tmp = f;
-	while(tmp!=NULL){
-		tmp = tmp->suivant_file;
+	if(f==NULL){ 
+		f = malloc(sizeof(file));
+		f->prec_file=NULL;
+		f->suivant_file=NULL;
+		f->elt = p;
+		return f;
+	} else{
+		debut_file tmp = f;
+		debut_file prec;
+		while(tmp!=NULL){
+			prec = tmp;
+			tmp = tmp->suivant_file;
+		}
+		tmp=malloc(sizeof(file));
+		tmp->elt = p;
+		tmp->prec_file = prec;
+		prec->suivant_file=tmp;
+		return f;
 	}
-	tmp=malloc(sizeof(file));
-	tmp->elt = p;
-	if(f==NULL){ f = tmp;}
-	return f;
 }
 
-// Ajoute tout les noeuds de p dans la file
+//void aff_file(debut_file f){
+	//debut_file tmp = f;
+	//while(tmp!=NULL){
+		//printf("%d | ",tmp->elt);
+		//tmp=tmp->suivant_file;
+	//}
+	//printf("\n");
+}
+
+// Vérifie si un élément appartient à la file
+int appartient_file(debut_file f, pnoeud_t p){
+	debut_file tmp = f;
+	while(tmp!=NULL && tmp->elt != p){
+		tmp = tmp->suivant_file;
+	}
+	return tmp!=NULL;
+}
+
+// Ajoute tout les noeuds de p dans la file (est-ce bon ?)
 debut_file ajouter_file(debut_file f, pnoeud_t p){
 	pnoeud_t tmp = p;
 	while(tmp!=NULL){
-		printf("ajouuut\n");
-		f = ajout_queue(f,tmp);
+		if(!(appartient_file(f,tmp))){
+			f = ajout_queue(f,tmp);
+		}
 		tmp = tmp->suivant_noeud;
 	}
 	return f;
 }
 
+
+// Enlever l'élément donné en argument de la file
 debut_file enlever_file(debut_file f, pnoeud_t p){
 	debut_file tmp,prec;
 	tmp=f;
@@ -314,15 +351,12 @@ void parcours_largeur(pnoeud_t p){
 	}
 	printf("debut\n");
 	while(f!=NULL){
-		printf("coucou\n");
 		pnoeud_t s;
 		s = f->elt;
-		printf("f avant : %d ",f);
 		f = enlever_file(f,s);
-		printf("f:%d\n",f);
 		if(!(visite[s->etiquette_noeud])){
 			visite[s->etiquette_noeud]=1;
-			printf("Noeud %d\n",s->etiquette_noeud);
+			printf("| %d ",s->etiquette_noeud);
 			parc_t t = s->liste_arcs;
 			while(t!=NULL){
 				pnoeud_t c = t->noeud_dest;
@@ -333,7 +367,7 @@ void parcours_largeur(pnoeud_t p){
 			}
 		}
 	}
-	printf("fin\n");
+	printf("|\n");
 	// FIN
 }
 
@@ -351,8 +385,8 @@ int main (int argc, char **argv)
 	
 	affGraphe(graphe);
 	
-	//parcours_largeur(graphe);
-	profondeur(graphe);
+	parcours_largeur(graphe);
+	//profondeur(graphe);
 	
 	return 0;
 }
