@@ -129,10 +129,13 @@ pnoeud_t creer_graphe(){
 }
 
 void libererGraphe(pnoeud_t graphe) {
-	
-	//TODO 
-	graphe = NULL;
-
+	pnoeud_t tmp, parcourir;
+	 parcourir = graphe;
+	while(parcourir!=NULL){
+		tmp = parcourir;
+		parcourir = parcourir->suivant_noeud;
+		free(tmp);
+	}
 }
 
 pnoeud_t generationNoeuds(pnoeud_t graphe, int nbNoeuds) {
@@ -190,7 +193,6 @@ int lire_graphe(pnoeud_t graphe, char *nomFich) {
 			
 			parc_t arcVerif = noeudCourr->liste_arcs; // Vérification de l'existence de l'arc dans la liste
 			
-			printf("Je passe ici !\n");
 			while(arcVerif != NULL) {
 				if(arcVerif->noeud_dest->etiquette_noeud == noeudDest) { fprintf(stderr, "Arc déjà présent\n"); return 1;}
 				arcVerif = arcVerif->suivant_arc;
