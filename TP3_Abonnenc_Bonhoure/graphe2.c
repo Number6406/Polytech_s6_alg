@@ -161,7 +161,8 @@ pnoeud_t generationNoeuds(pnoeud_t graphe, int nbNoeuds) {
 	return graphe;
 }
 
-int lire_graphe(pnoeud_t graphe, char *nomFich) {
+int lire_graphe(pnoeud_t *adr, char *nomFich) {
+	pnoeud_t graphe = *adr;
 	int n, a;
 	FILE *fichier = fopen(nomFich, "r");
 	int nbNoeuds, nbArcs;
@@ -202,14 +203,19 @@ int lire_graphe(pnoeud_t graphe, char *nomFich) {
 			if(noeudPotentiel == NULL) { fprintf(stderr, "Le noeud n'existe pas.\n"); return 1; } 
 			// création de l'arc dans la liste s'il n'est pas présent
 			parc_t arcCourr = malloc(sizeof(parc_t));
+			arcCourr->noeud_dest = noeudPotentiel;
 			arcCourr->etiquette_arc = etiqArc;
 			arcCourr->suivant_arc = noeudCourr->liste_arcs;
 			noeudCourr->liste_arcs = arcCourr;
+			
+			affGraphe(graphe);
 			
 		}
 		noeudCourr = noeudCourr->suivant_noeud; //Passage au noeud suivant
 		
 	}
+	
+	*adr = graphe;
 	
 	return 0;
 }
@@ -451,7 +457,7 @@ int main (int argc, char **argv)
 	//graphe = creer_graphe();
 
 	if(argc < 2) { printf("erreur de lecture : pas de nom indiqué"); return 1; }
-	lire_graphe(graphe, argv[1]);
+	lire_graphe(&graphe, argv[1]);
 	
 	affGraphe(graphe);
 	
