@@ -175,7 +175,6 @@ int lire_graphe(pnoeud_t *adr, char *nomFich) {
 	if(nbNoeuds == 0) { printf("Erreur : pas de noeuds\n"); return 1; }
 	graphe = generationNoeuds(graphe, nbNoeuds);
 	
-	affGraphe(graphe);
 
 	//Création des arcs de chaque noeud
 	pnoeud_t noeudCourr = graphe; //Noeud courrant permettant la création des arcs
@@ -208,7 +207,6 @@ int lire_graphe(pnoeud_t *adr, char *nomFich) {
 			arcCourr->suivant_arc = noeudCourr->liste_arcs;
 			noeudCourr->liste_arcs = arcCourr;
 			
-			affGraphe(graphe);
 			
 		}
 		noeudCourr = noeudCourr->suivant_noeud; //Passage au noeud suivant
@@ -377,6 +375,7 @@ debut_file ajout_queue(debut_file f, pnoeud_t p){
 		}
 		tmp=malloc(sizeof(file));
 		tmp->elt = p;
+		tmp->suivant_file=NULL;
 		tmp->prec_file = prec;
 		prec->suivant_file=tmp;
 		return f;
@@ -418,12 +417,13 @@ void parcours_largeur(pnoeud_t p){
 	debut_file f = NULL;
 	pnoeud_t en_cours = p;
 	
-	printf("Parcours en largeur\n");
+	printf("\nParcours en largeur\n");
+	
 	deparcourir(p);
+	
 	f = ajout_queue(f,p);
 	
 	while(f!=NULL){
-		
 		pnoeud_t s;
 		s = f -> elt;
 		f = enlever_file(f,s);
@@ -432,6 +432,7 @@ void parcours_largeur(pnoeud_t p){
 			printf("| %d ",s->etiquette_noeud);
 			
 			parc_t t = s->liste_arcs;
+			
 			while(t!=NULL){
 				pnoeud_t c = t->noeud_dest;
 				if(!(c->parcouru)){
@@ -450,32 +451,5 @@ void parcours_largeur(pnoeud_t p){
 	printf("|\n");
 	// FIN
 }
-
-int main (int argc, char **argv)
-{
-	pnoeud_t graphe = NULL;
-	//graphe = creer_graphe();
-
-	if(argc < 2) { printf("erreur de lecture : pas de nom indiqué"); return 1; }
-	lire_graphe(&graphe, argv[1]);
-	
-	affGraphe(graphe);
-	
-	
-	printf("Nombre d'arcs : %d\n", nombre_arcs(graphe));
-	printf("Nombre de noeuds : %d\n", nbNoeudGraphe(graphe));
-	printf("Dégré du graphe : %d\n", degre_graphe(graphe));
-	printf("Indépendant ? %d\n", independant(graphe));
-	printf("Complet ? %d\n", complet(graphe));
-	
-	affGraphe(graphe);
-	
-	//parcours_largeur(graphe);
-	profondeur(graphe);
-	
-	
-	return 0;
-}
-
   
              
