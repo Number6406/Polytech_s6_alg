@@ -30,11 +30,11 @@ void affGraphe(pnoeud_t graphe) {
 	
 	pnoeud_t tmpNoeuds = graphe;
 	while(tmpNoeuds != NULL) {
-		printf("Noeud %d [%d]|", tmpNoeuds->etiquette_noeud, tmpNoeuds->parcouru);
+		printf("Noeud %c [%d]|", 'A'+(tmpNoeuds->etiquette_noeud)-1, tmpNoeuds->parcouru);
 		
 		parc_t tmpArcs = tmpNoeuds->liste_arcs;
 		while(tmpArcs != NULL) {
-			printf(" -(%d)-> %d | ", tmpArcs->etiquette_arc, tmpArcs->noeud_dest->etiquette_noeud);
+			printf(" -(%d)-> %c | ", tmpArcs->etiquette_arc, 'A'-1+tmpArcs->noeud_dest->etiquette_noeud);
 			tmpArcs = tmpArcs->suivant_arc;
 		}
 		
@@ -200,13 +200,23 @@ int lire_graphe(pnoeud_t *adr, char *nomFich) {
 			
 			//Si le noeud vers lequel est censé pointer l'arc n'existe pas, retourne une erreur
 			if(noeudPotentiel == NULL) { fprintf(stderr, "Le noeud n'existe pas.\n"); return 1; } 
+			
 			// création de l'arc dans la liste s'il n'est pas présent
 			parc_t arcCourr = malloc(sizeof(parc_t));
 			arcCourr->noeud_dest = noeudPotentiel;
 			arcCourr->etiquette_arc = etiqArc;
-			arcCourr->suivant_arc = noeudCourr->liste_arcs;
-			noeudCourr->liste_arcs = arcCourr;
-			
+			arcCourr->suivant_arc = NULL;
+			// Ajout en queue
+			parc_t tmp = noeudCourr->liste_arcs;
+			parc_t prec=NULL;
+			while(tmp!=NULL){
+				prec = tmp;
+				tmp = tmp->suivant_arc;
+			}
+			if(prec == NULL){noeudCourr->liste_arcs = arcCourr;}
+			else {
+				prec->suivant_arc=arcCourr;
+			}
 			
 		}
 		noeudCourr = noeudCourr->suivant_noeud; //Passage au noeud suivant
@@ -338,7 +348,7 @@ int profondeur(pnoeud_t graphe) {
 		while(noeudCourr != NULL) {
 			if(noeudCourr->parcouru == 0) {
 				noeudCourr->parcouru = 1;
-				printf("%d ", noeudCourr->etiquette_noeud);
+				printf("%c ", 'A'-1+noeudCourr->etiquette_noeud);
 				
 				parc_t arcCourr = noeudCourr->liste_arcs;
 				while(arcCourr != NULL) {
@@ -429,7 +439,7 @@ void parcours_largeur(pnoeud_t p){
 		f = enlever_file(f,s);
 		if(!(s->parcouru)){
 			s->parcouru=1;
-			printf("| %d ",s->etiquette_noeud);
+			printf("| %c ",'A'-1+s->etiquette_noeud);
 			
 			parc_t t = s->liste_arcs;
 			
