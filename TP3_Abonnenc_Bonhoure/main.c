@@ -23,15 +23,16 @@
 
 
 #include <stdio.h>
-#include "graphe2.h"
-
+#include "graphe.h"
+#include "grapheio.h"
+#include "dijkstra.h"
 
 int main(int argc, char **argv)
 {	
 	pnoeud_t graphe = NULL;
 	//graphe = creer_graphe();
 
-	if(argc < 2) { printf("erreur de lecture : pas de nom indiqué"); return 1; }
+	if(argc < 2) { printf("Fournir le nom de fichier contenant le graphe\n"); return 1; }
 	lire_graphe(&graphe, argv[1]);
 	
 	affGraphe(graphe);
@@ -47,6 +48,9 @@ int main(int argc, char **argv)
 	
 	profondeur(graphe);
 	parcours_largeur(graphe);
+	
+	dijkstra(graphe);
+	affGraphe_cout(graphe);
 	
 	return 0;
 }

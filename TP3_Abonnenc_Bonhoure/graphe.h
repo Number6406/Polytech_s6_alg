@@ -1,3 +1,8 @@
+#ifndef GRAPHE_H
+#define GRAPHE_H
+
+#define NB_MAX_NOEUDS 20
+
 typedef struct arc *parc_t ;
 
 typedef struct n {
@@ -5,10 +10,12 @@ typedef struct n {
   parc_t     liste_arcs ; // arcs sortants du noeud
   struct n   *suivant_noeud ; // noeud suivant
   int		 parcouru; // vérifier sur le noeud a été parcouru lors d'un traitement
+  int 		 cout;
+  struct n	 *pred;
 } noeud_t, *pnoeud_t ;
 
 typedef struct arc {
-  int         etiquette_arc ; // etiquette de l arc
+  int         etiquette_arc ; // etiquette de l'arc
   pnoeud_t    noeud_dest ; // identificateur du noeud
   struct arc *suivant_arc ; // arc suivant
 } arc_t, *parc_t ;
@@ -18,15 +25,6 @@ typedef struct file{
 	struct file *suivant_file;
 	struct file *prec_file;
 } file, *debut_file;
-
-void affGraphe(pnoeud_t graphe);
-
-// Fonction interactive de création d'un graphe
-pnoeud_t creer_graphe();
-
-void libererGraphe(pnoeud_t graphe) ;
-
-int lire_graphe(pnoeud_t *adr, char *nomFich);
 
 // Nombre d'arc dans une liste d'arc fournie en paramètre
 int nb_arc_list(parc_t l);
@@ -49,5 +47,18 @@ int complet (pnoeud_t p);
 // Parcours en profondeur
 int profondeur(pnoeud_t graphe);
 
+// Structure de file utile au parcours en largeur
+// First In First Out
+// Ajouter un noeud en queue de file
+debut_file ajout_queue(debut_file f, pnoeud_t p);
+
+// Vérifie si un élément appartient à la file
+int appartient_file(debut_file f, pnoeud_t p);
+
+// Enlever l'élément donné en argument de la file
+debut_file enlever_file(debut_file f, pnoeud_t p);
+
 // Parcours en largeur d'un graphe
 void parcours_largeur(pnoeud_t p);
+
+#endif
