@@ -49,6 +49,7 @@ int main(int argc, char **argv)
 	profondeur(graphe);
 	parcours_largeur(graphe);
 	
+	printf("Ajout du coût des chemins selon Dijkstra.\n");
 	dijkstra(graphe);
 	affGraphe_cout(graphe);
 	

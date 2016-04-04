@@ -1,6 +1,7 @@
 #include "graphe.h"
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void init(pnoeud_t g){
 	pnoeud_t tmp = g;
@@ -23,6 +24,8 @@ void relax(pnoeud_t q, parc_t a){
 			r->cout = (q->cout)+(a->etiquette_arc);
 			r->pred = q;
 		}
+	} else {
+		fprintf(stderr,"relax : argument non valide (noeud, arc ou destination d'arc NULL)\n");
 	}
 }
 
@@ -42,9 +45,12 @@ int precond_dijkstra(pnoeud_t g){
 
 // Noeud de cout miniaml dans la file
 pnoeud_t min_d(debut_file f){
-	pnoeud_t min;
+	pnoeud_t min = NULL;
 	debut_file tmp = f;
-	if(tmp!=NULL) min = tmp->elt;
+	if(tmp!=NULL) {
+		min = tmp->elt;
+		tmp = tmp->suivant_file;
+	}
 	while(tmp!=NULL){
 		if(tmp->elt->cout < min->cout) min = tmp->elt;
 		tmp = tmp->suivant_file;
@@ -54,7 +60,7 @@ pnoeud_t min_d(debut_file f){
 
 // Ajout tout les noeud d'un graphe à une file
 debut_file ajouter_graphe(pnoeud_t g){
-	debut_file f;
+	debut_file f=NULL;
 	pnoeud_t tmp = g;
 	while (tmp!=NULL){
 		f = ajout_queue(f,tmp);
@@ -69,6 +75,7 @@ void dijkstra(pnoeud_t g){
 	debut_file Q = ajouter_graphe(g);
 	while (Q!=NULL){
 		pnoeud_t q = min_d(Q);
+		if(q==NULL) fprintf(stderr,"Dijkstra : Noeud min NULL\n");
 		Q = enlever_file(Q,q);
 		parc_t larc = q->liste_arcs;
 		while(larc!=NULL){

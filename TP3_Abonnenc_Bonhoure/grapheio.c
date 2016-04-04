@@ -30,7 +30,7 @@ void affGraphe_cout(pnoeud_t graphe) {
 		if(tmpNoeuds->pred!=NULL){
 			printf("Noeud %c [Coût : %d][Pred : %c]|", 'A'+(tmpNoeuds->etiquette_noeud)-1, tmpNoeuds->cout,'A'-1+tmpNoeuds->pred->etiquette_noeud);
 		} else {
-			printf("Noeud %c [Coût : %d]|", 'A'+(tmpNoeuds->etiquette_noeud)-1, tmpNoeuds->cout);
+			printf("Noeud %c [Coût : %d][Pred : *]|", 'A'+(tmpNoeuds->etiquette_noeud)-1, tmpNoeuds->cout);
 		}
 		parc_t tmpArcs = tmpNoeuds->liste_arcs;
 		while(tmpArcs != NULL) {
